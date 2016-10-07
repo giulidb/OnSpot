@@ -5,11 +5,16 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_up">Sign up with mail</string>
+    <string name="action_facebook">Connect with Facebook</string>
+    <string name="action_guest">Browse as a guest</string>
     <string name="auth_failed">Authentication failed</string>
-    <string name="title_activity_login">Sign up with email</string>
+    <string name="title_activity_login">Sign in</string>
 
     <!-- Strings for MapsActivity -->
     <string name="title_activity_maps">Map</string>
+
+    <!-- Strings for ProfileActivity -->
+    <string name="title_activity_profile">Join us</string>
 
 </resources>
