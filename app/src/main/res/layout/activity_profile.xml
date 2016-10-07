@@ -9,11 +9,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="it.unipi.iet.onspot.ProfileActivity">
 
+    <ImageButton
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:id="@+id/imageButton"
+        android:src="@drawable/avatar_guest"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/avatarprofile"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true" />
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="First Name"
+        android:hint="@string/first_name"
         android:ems="10"
         android:id="@+id/editText"
         android:layout_centerVertical="true"
@@ -23,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="Last Name"
+        android:hint="@string/last_name"
         android:ems="10"
         android:id="@+id/editText2"
         android:layout_below="@+id/editText"
@@ -37,5 +49,7 @@
         android:id="@+id/editText3"
         android:layout_below="@+id/editText2"
         android:layout_centerHorizontal="true"
-        android:text="Birthday" />
+        android:hint="Birthday" />
+
+
 </RelativeLayout>

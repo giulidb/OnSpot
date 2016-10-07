@@ -9,6 +9,7 @@
     <string name="action_facebook">Connect with Facebook</string>
     <string name="action_guest">Browse as a guest</string>
     <string name="auth_failed">Authentication failed</string>
+    <string name="create_user_failed">Creation user failed</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings for MapsActivity -->
@@ -16,5 +17,9 @@
 
     <!-- Strings for ProfileActivity -->
     <string name="title_activity_profile">Join us</string>
+    <string name="avatarprofile">AvatarProfile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="birthday">Birthday</string>
 
 </resources>
