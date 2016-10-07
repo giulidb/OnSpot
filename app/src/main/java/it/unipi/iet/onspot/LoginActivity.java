@@ -110,10 +110,6 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-                        Intent i = new Intent(LoginActivity.this,MapsActivity.class);
-                        startActivity(i);
-
-
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
@@ -122,6 +118,9 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                             Login.setEnabled(true);
+                        }else{
+                            Intent i = new Intent(LoginActivity.this,MapsActivity.class);
+                            startActivity(i);
                         }
                     }
                 });
