@@ -8,4 +8,8 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="auth_failed">Authentication failed</string>
     <string name="title_activity_login">Sign up with email</string>
+
+    <!-- Strings for MapsActivity -->
+    <string name="title_activity_maps">Map</string>
+
 </resources>
