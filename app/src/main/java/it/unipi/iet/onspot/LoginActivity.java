@@ -66,8 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         if(!validate_form(email,password))
             return;
 
-        //TODO: check if it works and start profile activity
-        /*
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -78,11 +76,16 @@ public class LoginActivity extends AppCompatActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.auth_failed,
+                            Toast.makeText(LoginActivity.this, R.string.create_user_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
+                        else{
+                            Intent i = new Intent(LoginActivity.this,ProfileActivity.class);
+                            startActivity(i);
+                        }
+
                     }
-                });*/
+                });
 
 
     }
