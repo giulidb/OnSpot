@@ -17,7 +17,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-
 /**
  * A login screen that offers login via email/password.
  */
@@ -26,11 +25,13 @@ public class LoginActivity extends AppCompatActivity {
     // auth and auth state listener declaration
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private AuthUtilities ut;
 
     private String TAG = "LoginActivity";
     private  EditText emailField;
     private EditText passwordField;
     private Button Login;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Login = (Button)findViewById(R.id.email_sign_in_button);
+
+        // ProgressDialog Initialization
+        progressDialog = new ProgressDialog(LoginActivity.this,ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setIndeterminate(true);
+
+
         // auth initialization
         mAuth = FirebaseAuth.getInstance();
 
@@ -62,14 +69,23 @@ public class LoginActivity extends AppCompatActivity {
     // Create a new account by passing the new user's email address and password
     public void create_new_account(String email, String password){
 
+        Log.d(TAG, "createAccount:" + email);
+
         //check format email and password
         if(!validate_form(email,password))
             return;
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        Login.setEnabled(false);
+
+        // Show screen spinner while authenticating
+        progressDialog.setMessage("Creating new user...");
+        progressDialog.show();
+
+      mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -80,13 +96,14 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                         }
                         else{
+                            Log.d(TAG,"New User Created");
+                            // After user creation redirect user to ProfileActivity to insert basic info
                             Intent i = new Intent(LoginActivity.this,ProfileActivity.class);
                             startActivity(i);
                         }
 
                     }
                 });
-
 
     }
 
@@ -98,10 +115,8 @@ public class LoginActivity extends AppCompatActivity {
             return;
 
         Login.setEnabled(false);
+
         // Show screen spinner while authenticating
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
@@ -122,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             Login.setEnabled(true);
                         }else{
+                            Log.d(TAG,"sign-in successful");
                             Intent i = new Intent(LoginActivity.this,MapsActivity.class);
                             startActivity(i);
                         }
@@ -156,8 +172,8 @@ public class LoginActivity extends AppCompatActivity {
             emailField.setError(null);
         }
 
-        if(TextUtils.isEmpty(password) || password.length() < 4 || password.length() > 10){
-            passwordField.setError("between 4 and 10 alphanumeric characters");
+        if(TextUtils.isEmpty(password) || password.length() < 6 || password.length() > 10){
+            passwordField.setError("between 6 and 10 alphanumeric characters");
             valid = false;
         }else{
             passwordField.setError(null);

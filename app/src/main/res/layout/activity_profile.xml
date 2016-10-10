@@ -39,17 +39,38 @@
         android:ems="10"
         android:id="@+id/editText2"
         android:layout_below="@+id/editText"
-        android:layout_alignEnd="@+id/editText" />
+        android:layout_alignEnd="@+id/editText"
+        android:layout_centerHorizontal="true"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="date"
+        android:hint="@string/birthday"
         android:ems="10"
         android:id="@+id/editText3"
         android:layout_below="@+id/editText2"
-        android:layout_centerHorizontal="true"
-        android:hint="Birthday" />
+        android:layout_alignStart="@+id/editText2"
+        android:focusable="false"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText4"
+        android:focusable="false"
+        android:hint="@string/gender"
+        android:layout_below="@+id/editText3"
+        android:layout_alignStart="@+id/editText3"
+        android:layout_alignEnd="@+id/editText3" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join"
+        android:id="@+id/button5"
+        android:layout_below="@+id/editText4"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
