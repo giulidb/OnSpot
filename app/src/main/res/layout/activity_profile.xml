@@ -9,17 +9,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="it.unipi.iet.onspot.ProfileActivity">
 
-    <ImageButton
+
+    <ImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
-        android:id="@+id/imageButton"
+        android:id="@+id/imageProfile"
         android:src="@drawable/avatar_guest"
         android:background="@android:color/transparent"
         android:contentDescription="@string/avatarprofile"
         android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:contentDescription="image"
+        android:clickable="true"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:background="@drawable/edit_states"
+        android:src="@drawable/edit_action"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="20dp"
+        android:id="@+id/edit_photo"
+        android:layout_alignBottom="@+id/imageProfile"
+        android:layout_alignEnd="@+id/imageProfile" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -67,7 +83,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Join"
+        android:text="@string/join"
         android:id="@+id/button5"
         android:layout_below="@+id/editText4"
         android:layout_centerHorizontal="true" />

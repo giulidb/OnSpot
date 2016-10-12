@@ -25,8 +25,6 @@ public class LoginActivity extends AppCompatActivity {
     // auth and auth state listener declaration
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private AuthUtilities ut;
-
     private String TAG = "LoginActivity";
     private  EditText emailField;
     private EditText passwordField;
@@ -94,13 +92,15 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, R.string.create_user_failed,
                                     Toast.LENGTH_SHORT).show();
+                                    Login.setEnabled(true);
+
                         }
                         else{
                             Log.d(TAG,"New User Created");
                             // After user creation redirect user to ProfileActivity to insert basic info
                             Intent i = new Intent(LoginActivity.this,ProfileActivity.class);
                             startActivity(i);
-                        }
+                       }
 
                     }
                 });

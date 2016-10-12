@@ -23,6 +23,6 @@
     <string name="last_name">Last Name</string>
     <string name="birthday">Birthday</string>
     <string name="gender">Gender</string>
-
+    <string name="join">Join</string>
 
 </resources>

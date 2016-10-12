@@ -88,7 +88,7 @@ public class MapsActivity  extends AppCompatActivity implements OnMapReadyCallba
 
         @Override
         public void onBackPressed() {
-            // disable going back to the SignUpActivity
+            // disable going back to the previous Activity
             moveTaskToBack(true);
         }
 
