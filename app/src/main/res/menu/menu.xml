@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+    <!-- top action bar -->
     <menu xmlns:android="http://schemas.android.com/apk/res/android">
-        <item android:id="@+id/menu"
+        <item android:id="@+id/logout"
             android:title="@string/option_logout"/>
+        <item android:id="@+id/modify"
+            android:title="@string/modify_profile"/>
+        <item android:id="@+id/info"
+            android:title="@string/info"/>
     </menu>
+
+

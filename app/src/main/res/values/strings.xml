@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">OnSpot</string>
     <string name="option_logout">Logout</string>
+    <string name="modify_profile">Modify profile</string>
+    <string name="info">Info</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -15,6 +17,12 @@
 
     <!-- Strings for MapsActivity -->
     <string name="title_activity_maps">Map</string>
+    <string name ="search">Search</string>
+    <string name ="add_spot">Add Spot</string>
+    <string name ="profile">Profile</string>
+    <string name ="liked">Liked</string>
+    <string name ="list">List</string>
+
 
     <!-- Strings for ProfileActivity -->
     <string name="title_activity_profile">Join us</string>

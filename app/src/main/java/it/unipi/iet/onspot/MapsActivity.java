@@ -21,6 +21,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnMenuTabSelectedListener;
 
 
 public class MapsActivity  extends AppCompatActivity implements OnMyLocationButtonClickListener, OnMapReadyCallback,
@@ -70,6 +72,20 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
                 }
             };
 
+              /*
+            Bottom bar
+             */
+            Log.d(TAG,"Pre bottom action bar");
+            BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
+            bottomBar.useDarkTheme(true);
+            bottomBar.setItemsFromMenu(R.menu.bottom_menu, new OnMenuTabSelectedListener() {
+                @Override
+                public void onMenuItemSelected(int itemId) {
+                    switch (itemId) {
+                        //TODO: switch case
+                    }
+                }
+            });
 
         }
 
@@ -163,7 +179,7 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             switch (id) {
-                case R.id.menu:
+                case R.id.logout:
             /*
                  logout
              */
