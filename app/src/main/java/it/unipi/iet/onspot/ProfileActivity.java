@@ -1,19 +1,23 @@
 package it.unipi.iet.onspot;
 
 import android.app.DatePickerDialog;
+import java.io.IOException;
 import java.util.Calendar;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -22,9 +26,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     // variable declaration
     private EditText birthday;
     private EditText gender;
+    EditText firstName;
+    EditText lastName;
     private Button butt;
     private ImageView edit_photo;
     AlertDialog.Builder builder;
+    Uri photo_uri = null;
     AlertDialog dialog;
     private String TAG = "ProfileActivity";
     String [] GENDERS = {"Male","Female"};
@@ -36,6 +43,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
         // variables initialization
+        firstName = (EditText)findViewById(R.id.editText);
+        lastName = (EditText)findViewById(R.id.editText2);
         birthday = (EditText)findViewById(R.id.editText3);
         gender = (EditText)findViewById(R.id.editText4);
         butt = (Button)findViewById(R.id.button5);
@@ -87,25 +96,34 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /*
+    * Function to change profile photo loading it from camera o gallery
+    */
+
+    //TODO: Permission
     public void change_photo(){
 
-        builder = new AlertDialog.Builder(ProfileActivity.this);
-        builder.setTitle("Load a picture from...");
-
-
-        dialog = builder.create();
-        dialog.show();
+       MultimediaUtilities.create_intent("image",this);
 
     }
 
     // Click on join button
     public void join_user(){
 
-        //TODO: check if and what fields are required and how to save others info in FRDB
+        String Name = firstName.getText().toString();
+        String Surname = lastName.getText().toString();
+
+        //check format email and password
+        if(!validate_form(Name,Surname))
+            return;
+
         AuthUtilities ut = new AuthUtilities(FirebaseAuth.getInstance().getCurrentUser());
-        EditText firstName = (EditText)findViewById(R.id.editText);
-        EditText lastName = (EditText)findViewById(R.id.editText2);
-        ut.updateUserProfile(firstName.getText().toString() + " " + lastName.getText().toString(),null);
+        // check if photo was modified or not
+        Uri avatar = Uri.parse("android.resource://my.package.name/" + R.drawable.avatar_guest);
+        Uri uri = (photo_uri != null)? photo_uri : avatar;
+
+        // update profile info
+        ut.updateUserProfile(Name + " " + Surname,uri);
         Log.d(TAG,"Profile updated: "+ ut.getUser().getDisplayName());
 
         // Redirect user to MapsActivity after saved info
@@ -114,6 +132,60 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    // function callback automatically after choosing picture from gallery or camera
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // retrieve view contained photo profile
+        ImageView photo = (ImageView)findViewById(R.id.imageProfile);
+
+        Bitmap bm = null;
+        if (data != null) {
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+           photo_uri = data.getData();
+
+            // CALL THIS METHOD TO GET THE ACTUAL PATH
+            String path = MultimediaUtilities.getImagePath(this,photo_uri);
+            Log.d(TAG,"Path of bitmap= "+ path);
+
+            // Get right orientation of the image
+            bm = MultimediaUtilities.rotateBitmap(bm,path);
+
+
+            // Rounded cropped image
+            bm = RoundedImageView.getRoundedCroppedBitmap(bm,300);
+            photo.setImageBitmap(bm);
+        }
+
+
+
+    }
+
+    // Check if form's fields are compiled properly
+    public boolean validate_form(String Name, String Surname){
+        boolean valid = true;
+        if(TextUtils.isEmpty(Name)){
+            firstName.setError("Enter a name");
+            valid = false;
+        }else{
+            firstName.setError(null);
+        }
+        if(TextUtils.isEmpty(Surname)){
+            lastName.setError("Enter a last-name");
+            valid = false;
+        }else{
+            lastName.setError(null);
+        }
+
+        return valid;
+    }
 
     @Override
     public void onClick(View view) {

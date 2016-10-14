@@ -17,7 +17,6 @@
         android:scaleType="centerInside"
         android:id="@+id/imageProfile"
         android:src="@drawable/avatar_guest"
-        android:background="@android:color/transparent"
         android:contentDescription="@string/avatarprofile"
         android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true" />
@@ -31,8 +30,8 @@
         android:scaleType="fitXY"
         android:background="@drawable/edit_states"
         android:src="@drawable/edit_action"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
         android:id="@+id/edit_photo"
         android:layout_alignBottom="@+id/imageProfile"
         android:layout_alignEnd="@+id/imageProfile" />

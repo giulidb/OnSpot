@@ -55,11 +55,11 @@ public class AuthUtilities {
                 });
     }
 
-    public void updateUserProfile(String Name, String PhotoUri){
+    public void updateUserProfile(String Name, Uri PhotoUri){
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(Name)
-               // .setPhotoUri(Uri.parse(PhotoUri))
+                .setPhotoUri(PhotoUri)
                 .build();
 
         user.updateProfile(profileUpdates)
