@@ -37,7 +37,7 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabSelectedListener;
 
 
-public class MapsActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener, OnMapReadyCallback, OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback, LocationListener  {
+public class MapsActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener, OnMapReadyCallback, LocationListener, OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback  {
 
         private GoogleMap mMap;
 
@@ -189,7 +189,7 @@ public class MapsActivity extends AppCompatActivity implements ConnectionCallbac
         @Override
         public void onResume() {
             super.onResume();
-            if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            if (mGoogleApiClient.isConnected()) {
                 startLocationUpdates();
             }
         }
