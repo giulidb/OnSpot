@@ -3,8 +3,10 @@ package it.unipi.iet.onspot;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
@@ -12,27 +14,43 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabSelectedListener;
 
 
-public class MapsActivity  extends AppCompatActivity implements OnMyLocationButtonClickListener, OnMapReadyCallback,
-                                                                ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener, OnMapReadyCallback, OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback  {
 
         private GoogleMap mMap;
         //Request code for location permission request.
         private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
         //Flag indicating whether a requested permission has been denied after returning in.
         private boolean mPermissionDenied = false;
+
+        //Provides the entry point to Google Play services.
+        protected GoogleApiClient mGoogleApiClient;
+
+        //Represents a geographical location.
+        protected Location mLastLocation;
+
 
         // variabili di firebase
         private FirebaseAuth mAuth;
@@ -45,9 +63,13 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
             setContentView(R.layout.activity_maps);
 
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
+            SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+            FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+            fragTransaction.add(R.id.fragment_container, mapFragment);
+            fragTransaction.commit();
             mapFragment.getMapAsync(this);
+
+            buildGoogleApiClient();
 
             /*
             * Parte di Firebase aggiunta
@@ -89,6 +111,46 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
 
         }
 
+    /**
+     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        // Provides a simple way of getting a device's location and is well suited for
+        // applications that do not require a fine-grained location and that do not need location
+        // updates. Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        Log.d(TAG, "entrato in on connected");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Log.d(TAG, "esco da on connected");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
 
         /*
          *  Google Maps functions
@@ -98,6 +160,20 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
+            LatLng pos;
+            Log.d(TAG, "entrato in map ready");
+
+            if (mLastLocation != null) {
+                pos = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                Log.d(TAG, "location ottenuta");
+            } else {
+                Log.d(TAG, "location nulla");
+                Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+                pos = new LatLng(0,0);
+            }
+            // Add a marker in the current position and move the camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(20), 2000, null);
 
             mMap.setOnMyLocationButtonClickListener(this);
             enableMyLocation();
@@ -122,6 +198,7 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
             return false;
         }
 
+        //Calls enableMyLocation() if the fine location permission has been granted, after being requested.
         @Override
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -131,7 +208,6 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
 
             if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Enable the my location layer if the permission has been granted.
                 enableMyLocation();
             } else {
                 // Display the missing permission error dialog when the fragments resume.
@@ -139,20 +215,17 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
             }
         }
 
+        // Display the missing permission error dialog when the fragments resume.
         @Override
         protected void onResumeFragments() {
             super.onResumeFragments();
             if (mPermissionDenied) {
                 // Permission was not granted, display error dialog.
-                showMissingPermissionError();
+                PermissionUtilities.PermissionDeniedDialog.newInstance(true).show(getSupportFragmentManager(), "dialog");
                 mPermissionDenied = false;
             }
         }
 
-        //Displays a dialog with error message explaining that the location permission is missing.
-        private void showMissingPermissionError() {
-            PermissionUtilities.PermissionDeniedDialog.newInstance(true).show(getSupportFragmentManager(), "dialog");
-        }
 
         /*
          * Disable going back function
@@ -193,6 +266,7 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
         public void onStart() {
             super.onStart();
             mAuth.addAuthStateListener(mAuthListener);
+            mGoogleApiClient.connect();
         }
 
         @Override
@@ -201,8 +275,10 @@ public class MapsActivity  extends AppCompatActivity implements OnMyLocationButt
             if (mAuthListener != null) {
                mAuth.removeAuthStateListener(mAuthListener);
             }
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
         }
 
-
-    }
+}
 
