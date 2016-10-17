@@ -25,6 +25,7 @@
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.
     </string>
+    <string name="location_updated_message">Location updated</string>
 
 
     <!-- Strings for ProfileActivity -->
