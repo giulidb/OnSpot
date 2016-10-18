@@ -35,12 +35,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     AlertDialog dialog;
     private String TAG = "ProfileActivity";
     String [] GENDERS = {"Male","Female"};
+    AuthUtilities AuthUt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
 
         // variables initialization
         firstName = (EditText)findViewById(R.id.editText);
@@ -55,6 +55,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         gender.setOnClickListener(this);
         butt.setOnClickListener(this);
         edit_photo.setOnClickListener(this);
+
+        //Authentication
+        AuthUt = new AuthUtilities();
 
     }
 
@@ -117,17 +120,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if(!validate_form(Name,Surname))
             return;
 
-        AuthUtilities ut = new AuthUtilities(FirebaseAuth.getInstance().getCurrentUser());
         // check if photo was modified or not
         Uri avatar = Uri.parse("android.resource://my.package.name/" + R.drawable.avatar_guest);
         Uri uri = (photo_uri != null)? photo_uri : avatar;
 
         // update profile info
-        ut.updateUserProfile(Name + " " + Surname,uri);
-        Log.d(TAG,"Profile updated: "+ ut.getUser().getDisplayName());
+        AuthUt.updateUserProfile(Name + " " + Surname,uri);
+        Log.d(TAG,"Profile updated: "+ AuthUt.getUser().getDisplayName());
 
-        // Redirect user to MapsActivity after saved info
-        Intent i = new Intent(ProfileActivity.this,MapsActivity.class);
+        // Redirect user to MapsFragment after saved info
+        Intent i = new Intent(ProfileActivity.this,MapsActivity.
+                class);
         startActivity(i);
 
     }
@@ -148,19 +151,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 e.printStackTrace();
             }
 
-            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            // Get uri of the bitmap
            photo_uri = data.getData();
-
-            // CALL THIS METHOD TO GET THE ACTUAL PATH
+            // Get the actual path
             String path = MultimediaUtilities.getImagePath(this,photo_uri);
             Log.d(TAG,"Path of bitmap= "+ path);
-
             // Get right orientation of the image
             bm = MultimediaUtilities.rotateBitmap(bm,path);
-
-
             // Rounded cropped image
             bm = RoundedImageView.getRoundedCroppedBitmap(bm,300);
+            // Set image as profile photo
             photo.setImageBitmap(bm);
         }
 
@@ -204,6 +204,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onBackPressed() {
         // disable going back to the SignUpActivity
         moveTaskToBack(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AuthUt.addListner();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AuthUt.removeListener();
     }
 
 

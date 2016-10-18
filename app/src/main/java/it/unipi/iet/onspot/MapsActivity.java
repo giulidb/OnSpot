@@ -51,8 +51,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Marker mCurrLocationMarker;
 
     // Firebase variables
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private AuthUtilities AuthUt;
 
     String TAG = "MapsActivity";
 
@@ -76,30 +75,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         /*
          * Firebase part
          */
-        mAuth = FirebaseAuth.getInstance();
-        // Auth state listener initialization
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                    //if user logged out changes activity to Main Activity
-                    Intent i = new Intent(MapsActivity.this,MainActivity.class);
-                    startActivity(i);
-                }
 
-            }
-        };
+        AuthUt = new AuthUtilities();
+        if(AuthUt.getUser() != null ){
+            // if user is already logged changes activity
+            Log.d(TAG,"User already logged");}
+
 
         /*
          * Bottom Bar part
          */
-        Log.d(TAG,"Pre bottom action bar");
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
         bottomBar.useDarkTheme(true);
         bottomBar.setItemsFromMenu(R.menu.bottom_menu, new OnMenuTabSelectedListener() {
@@ -190,7 +175,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //move map camera
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -277,10 +262,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
         switch (id) {
             case R.id.logout:
-            /*
-                 logout
-             */
-                mAuth.signOut();
+                //logout
+                AuthUt.signOut();
+                Intent i = new Intent(MapsActivity.this,MainActivity.class);
+                startActivity(i);
 
         }
         return false;
@@ -289,15 +274,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        AuthUt.addListner();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        AuthUt.removeListener();
+
     }
 
     @Override

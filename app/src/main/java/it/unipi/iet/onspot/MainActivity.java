@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.maps.MapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity  {
     static final String EXTRA_MESSAGE = "it.unipi.iet.onspot.MESSAGE";
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
+    private AuthUtilities AuthUt;
     private String TAG = "MainActivity";
 
     @Override
@@ -23,28 +25,16 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Auth initialization
-        mAuth = FirebaseAuth.getInstance();
-
-        // Auth state listener initialization
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
-                    // if user is already logged changes activity
-                    Intent i = new Intent(MainActivity.this,MapsActivity.class);
-                    startActivity(i);
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-
+        // Check Authentication
+        AuthUt = new AuthUtilities();
+        if(AuthUt.getUser() != null ){
+            // if user is already logged changes activity
+            Log.d(TAG,"User already logged");
+            Intent i = new Intent(MainActivity.this,MapsActivity.class);
+            startActivity(i);}
+        else{
+            Log.d(TAG,"User not logged yet");
             }
-        };
 
         // Sign in Button
         final Button SignIn = (Button) findViewById(R.id.button);
@@ -70,14 +60,12 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        AuthUt.addListner();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        AuthUt.removeListener();
     }
 }

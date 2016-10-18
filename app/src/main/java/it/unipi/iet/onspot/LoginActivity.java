@@ -23,8 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
 
     // auth and auth state listener declaration
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private AuthUtilities AuthUt;
     private String TAG = "LoginActivity";
     private  EditText emailField;
     private EditText passwordField;
@@ -42,26 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(LoginActivity.this,ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setIndeterminate(true);
 
-
-        // auth initialization
-        mAuth = FirebaseAuth.getInstance();
-
-        // auth state listener initialization
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-
-            }
-        };
-
+        // Authentication
+        AuthUt = new AuthUtilities();
     }
 
     // Create a new account by passing the new user's email address and password
@@ -79,7 +60,8 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating new user...");
         progressDialog.show();
 
-      mAuth.createUserWithEmailAndPassword(email, password)
+        FirebaseAuth mAuth = AuthUt.get_mAuth();
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -121,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
 
         // [START sign_in_with_email]
+        FirebaseAuth mAuth = AuthUt.get_mAuth();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -185,15 +168,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        AuthUt.addListner();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        AuthUt.removeListener();
     }
 
 }

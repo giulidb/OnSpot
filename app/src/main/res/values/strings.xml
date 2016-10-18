@@ -17,11 +17,11 @@
 
     <!-- Strings for MapsActivity -->
     <string name="title_activity_maps">Map</string>
-    <string name ="search">Search</string>
-    <string name ="add_spot">Add Spot</string>
-    <string name ="profile">Profile</string>
-    <string name ="liked">Liked</string>
-    <string name ="list">List</string>
+    <string name="search">Search</string>
+    <string name="add_spot">Add Spot</string>
+    <string name="profile">Profile</string>
+    <string name="liked">Liked</string>
+    <string name="list">List</string>
     <string name="no_location_detected">
         No location detected. Make sure location is enabled on the device.
     </string>
