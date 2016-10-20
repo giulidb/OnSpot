@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorAccentLight">
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:text="Add Spot"
+    android:textColor="@android:color/white"
+    android:background="@color/colorPrimaryDark"
+    android:textSize="16sp"
+    android:textAllCaps="true"
+    android:padding="16dp"
+    android:id="@+id/addspot"
+    />
+
+    <RelativeLayout
+        android:layout_width="350dp"
+        android:layout_height="85dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/addspot"
+        android:background="@color/colorAccent">
+        <ImageView
+            android:layout_height="80dp"
+            android:layout_width="80dp"
+            android:contentDescription="image"
+            android:padding="4dp"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/upload"
+            android:id="@+id/load"
+            android:layout_alignParentTop="true" />
+    </RelativeLayout>
+
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:clickable="true"
+        android:onClick="AddSpot_onClick"
+        android:contentDescription="image"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="310dp"
+        android:padding="4dp"
+        android:background="@color/colorPrimaryDark"
+        android:scaleType="fitXY"
+        android:src="@drawable/image"
+        android:id="@+id/image_add_spot"
+        />
+
+
+<ImageView
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:contentDescription="image"
+    android:onClick="AddSpot_onClick"
+    android:clickable="true"
+    android:padding="4dp"
+    android:layout_below="@id/image_add_spot"
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="310dp"
+    android:scaleType="fitXY"
+    android:src="@drawable/video"
+    android:id="@+id/video_add_spot"
+    android:background="@color/colorPrimaryDark"
+    />
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:contentDescription="image"
+        android:onClick="AddSpot_onClick"
+        android:clickable="true"
+        android:padding="4dp"
+        android:layout_marginLeft="310dp"
+        android:layout_below="@id/video_add_spot"
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimaryDark"
+        android:scaleType="fitXY"
+        android:src="@drawable/microphone"
+        android:id="@+id/audio_add_spot"
+        />
+
+    <EditText
+    android:layout_width="300dp"
+    android:layout_height="90dp"
+    android:background="@android:color/white"
+    android:hint="Description"
+    android:gravity="top"
+    android:id="@+id/textView2"
+    android:layout_alignTop="@id/image_add_spot"
+    android:layout_marginStart="5dp"
+    android:layout_alignBottom="@+id/video_add_spot" />
+
+<EditText
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:hint="Category"
+    android:background="@android:color/white"
+    android:id="@+id/textView3"
+    android:layout_alignStart="@+id/textView2"
+    android:layout_alignEnd="@+id/textView2"
+    android:layout_alignTop="@+id/audio_add_spot"
+    android:layout_alignBottom="@+id/audio_add_spot" />
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Save"
+    android:layout_below="@id/textView3"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/button6" />
+
+</RelativeLayout>

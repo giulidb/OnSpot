@@ -22,39 +22,46 @@ import java.util.List;
  */
 public class MultimediaUtilities {
 
-
-    /* function to create and launch an intent to pick picture from camera or file system */
+    /* function to create and launch an intent to pick multimedia file from other app like
+     camera or audio recorder or from the file system */
     public static void create_intent(String file, Activity activity){
 
-        int RESULT_LOAD_IMG = 1;
+        String TAG = "MultimediaUtilities";
+        final int RESULT_LOAD = 1;
 
-        //TODO: vedere se fare un'unica funzione per i vari tipi di file o una funzione per tipo
-        if(file.equals("image")){
-        // Camera
-        final List<Intent> cameraIntents = new ArrayList<>();
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        // Camera or VideoCamera or AudioRegister
+        final List<Intent> fileIntents = new ArrayList<>();
+        final Intent captureIntent;
+
+        // Discriminate app to launch in base on the String file: image,video or audio
+            if(file.equals("image")){
+                captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);}
+            else if(file.equals("video")){
+                captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+            }else
+                captureIntent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+
         final PackageManager packageManager = activity.getPackageManager();
-        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
-        for(ResolveInfo res : listCam) {
+        final List<ResolveInfo> listFile = packageManager.queryIntentActivities(captureIntent, 0);
+        for(ResolveInfo res : listFile) {
             final String packageName = res.activityInfo.packageName;
             final Intent intent = new Intent(captureIntent);
             intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
             intent.setPackage(packageName);
-            cameraIntents.add(intent);
+            fileIntents.add(intent);
         }
 
-        // Filesystem
+        // Filesystem, String file determine the kind of file to search in the filesystem
         final Intent galleryIntent = new Intent();
-        galleryIntent.setType("image/*");
+        galleryIntent.setType(file+"/*");
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 
         // Chooser of filesystem options.
         final Intent chooserIntent = Intent.createChooser(galleryIntent, "Complete action using");
 
         // Add the camera options.
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
-
-        activity.startActivityForResult(chooserIntent, RESULT_LOAD_IMG);}
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, fileIntents.toArray(new Parcelable[fileIntents.size()]));
+        activity.startActivityForResult(chooserIntent, RESULT_LOAD);
 
     }
 

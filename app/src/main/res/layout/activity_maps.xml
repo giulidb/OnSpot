@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bgLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="it.unipi.iet.onspot.MapsActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -12,4 +16,9 @@
         tools:context="com.example.app.MapLocationActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
-</LinearLayout>
+    <!-- Include our custom Toolbar -->
+    <include layout="@layout/toolbar" />
+
+
+</android.support.design.widget.CoordinatorLayout>
+

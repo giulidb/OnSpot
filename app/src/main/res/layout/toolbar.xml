@@ -1,0 +1,72 @@
+<android.support.v7.widget.Toolbar android:id="@+id/toolbar_bottom"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="?attr/colorPrimary"
+    android:layout_gravity="bottom"
+    android:elevation="4dp"
+    android:minHeight="?attr/actionBarSize"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <ImageButton
+            android:name="@string/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/search_icon"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/magnify"
+            style="@style/Widget.AppCompat.ActionButton"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_spot"
+            android:layout_toRightOf="@+id/search_icon"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/list"
+            android:text="List"
+            style="@style/Widget.AppCompat.ActionButton"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:id="@+id/plus"
+            android:layout_toRightOf="@+id/list_spot"
+            android:text="Add Spot"
+            android:onClick="toolbarOnClick"
+            android:src="@drawable/plus"
+            style="@style/Widget.AppCompat.ActionButton"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/heart"
+            android:layout_toRightOf="@+id/plus"
+            android:background="@color/colorPrimary"
+            android:text="Liked"
+            android:src="@drawable/heart"
+            style="@style/Widget.AppCompat.ActionButton"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/account"
+            android:layout_toRightOf="@+id/heart"
+            android:text="Profile"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/account"
+            style="@style/Widget.AppCompat.ActionButton" />
+
+    </RelativeLayout>
+
+
+
+
+</android.support.v7.widget.Toolbar>

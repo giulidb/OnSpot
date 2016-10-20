@@ -1,24 +1,20 @@
 package it.unipi.iet.onspot;
 
 import android.*;
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,9 +22,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -36,11 +29,8 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
-import java.io.IOException;
-import java.util.List;
-
 import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -228,6 +218,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
+
+    // onClick for toolbar
+    public void toolbarOnClick(View view){
+
+        switch(view.getId()){
+            case R.id.plus:
+                BottomSheetDialogFragment bottomSheetDialogFragment = new AddSpotFragment();
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
+        }
+    }
+
+    // onClick for add_spot functions
+    public void AddSpot_onClick(View view){
+        Log.d(TAG,"View clicked"+ view.getId());
+
+        // TODO:
+        switch(view.getId()){
+            case R.id.image_add_spot:
+                Log.d(TAG,"Image clicked");
+                MultimediaUtilities.create_intent("image",this);
+                break;
+            case R.id.video_add_spot:
+                Log.d(TAG,"Video clicked");
+                MultimediaUtilities.create_intent("video",this);
+                break;
+            case R.id.audio_add_spot:
+                Log.d(TAG,"Audio clicked");
+                MultimediaUtilities.create_intent("audio",this);
+        }
+
+
+    }
+
 
     /*
      * Functions for permission handling.
