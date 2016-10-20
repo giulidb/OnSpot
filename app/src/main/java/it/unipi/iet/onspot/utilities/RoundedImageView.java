@@ -1,4 +1,4 @@
-package it.unipi.iet.onspot;
+package it.unipi.iet.onspot.utilities;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,10 +1,15 @@
 package it.unipi.iet.onspot;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.support.annotation.NonNull;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
@@ -12,12 +17,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -26,16 +37,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabSelectedListener;
+import java.io.IOException;
+import java.util.List;
 
-import android.os.Build;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
                                                                 ConnectionCallbacks,
@@ -48,10 +54,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
-    Marker mCurrLocationMarker;
 
     // Firebase variables
     private AuthUtilities AuthUt;
+
+    // Permission request codes
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    public static final int CAMERA_PERMISSION_REQUEST_CODE = 2;
+    public static final int READ_EXTERNAL_PERMISSION_REQUEST_CODE = 3;
 
     String TAG = "MapsActivity";
 
@@ -64,10 +74,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         /*
          * GoogleMaps part
          */
+
         // Check for location permission at runtime for Android version 6.0 or greater (API level 23)
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Log.d(TAG, "Permission check at runtime");
-            checkLocationPermission();
+            PermissionUtilities.checkPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            LOCATION_PERMISSION_REQUEST_CODE);
         }
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
@@ -81,20 +93,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // if user is already logged changes activity
             Log.d(TAG,"User already logged");}
 
-
-        /*
-         * Bottom Bar part
-         */
-        BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
-        bottomBar.useDarkTheme(true);
-        bottomBar.setItemsFromMenu(R.menu.bottom_menu, new OnMenuTabSelectedListener() {
-            @Override
-            public void onMenuItemSelected(int itemId) {
-                switch (itemId) {
-                    //TODO: switch case
-                }
-            }
-        });
     }
 
     /*
@@ -161,19 +159,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onLocationChanged(Location location)
     {
         mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
         //move map camera
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
@@ -182,59 +170,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
-    // Check for location permission
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    //Calls buildGoogleApiClient() if the fine location permission has been granted, after being requested.
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mGoogleMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
-
 
     /*
      * Disable going back function
@@ -291,6 +226,73 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //stop location updates when Activity is no longer active
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    /*
+     * Functions for permission handling.
+     */
+
+    //Calls buildGoogleApiClient() if the fine location permission has been granted, after being requested.
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mGoogleMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+                    // permission denied
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+            case CAMERA_PERMISSION_REQUEST_CODE: {
+                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    //TODO: Change permission above and below
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        //TODO: To implement
+                    }
+
+                } else {
+                    // permission denied
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            case READ_EXTERNAL_PERMISSION_REQUEST_CODE: {
+                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    //TODO: Change permission above
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        //TODO: To implement
+                    }
+                } else {
+                    // permission denied
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 

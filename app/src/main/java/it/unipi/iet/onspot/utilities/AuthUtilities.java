@@ -1,6 +1,6 @@
 //TODO: vedere se è effettivamente utile questa classe o no
 
-package it.unipi.iet.onspot;
+package it.unipi.iet.onspot.utilities;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;

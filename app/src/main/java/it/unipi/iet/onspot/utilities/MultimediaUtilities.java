@@ -1,4 +1,4 @@
-package it.unipi.iet.onspot;
+package it.unipi.iet.onspot.utilities;
 
 import android.app.Activity;
 import android.content.ComponentName;

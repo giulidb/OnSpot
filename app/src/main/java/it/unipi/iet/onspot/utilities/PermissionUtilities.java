@@ -1,6 +1,5 @@
-package it.unipi.iet.onspot;
+package it.unipi.iet.onspot.utilities;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -8,14 +7,30 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import it.unipi.iet.onspot.R;
 
 
 public abstract class PermissionUtilities {
+
+    /*
+     * Checks for the permission specified by the arguments and, if not found, calls the
+     * requestPermission function.
+     */
+    public static boolean checkPermission(AppCompatActivity activity, String permission, int requestId){
+        if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermission(activity, requestId, permission, true);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
-     * Requests the fine location permission. If a rationale with an additional explanation should
+     * Requests the permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
      */
     public static void requestPermission(AppCompatActivity activity, int requestId,

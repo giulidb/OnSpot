@@ -18,7 +18,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import com.google.firebase.auth.FirebaseAuth;
+
+import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.MultimediaUtilities;
+import it.unipi.iet.onspot.utilities.RoundedImageView;
 
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
