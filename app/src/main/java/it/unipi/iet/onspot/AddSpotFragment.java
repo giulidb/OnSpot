@@ -1,11 +1,17 @@
 package it.unipi.iet.onspot;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 /**
  *  BottomSheetDialogFragment to display in the bootom sheet when a user want to
@@ -13,6 +19,12 @@ import android.view.View;
  */
 
 public class AddSpotFragment extends BottomSheetDialogFragment {
+
+    private ImageView preview;
+    private ImageView play;
+    private ImageView audio;
+    private EditText category;
+
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
 
@@ -45,6 +57,44 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         }
 
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_addspot, container, false);
+        preview = (ImageView) view.findViewById(R.id.load);
+        play = (ImageView) view.findViewById(R.id.play);
+        audio = (ImageView) view.findViewById(R.id.audio);
+        category = (EditText) view.findViewById(R.id.category);
+
+        return view;
+    }
+
+    public void set_preview(Bitmap bm){
+
+        play.setVisibility(View.INVISIBLE);
+        audio.setVisibility(View.INVISIBLE);
+        preview.setImageBitmap(bm);
+        preview.setClickable(true);
+    }
+
+    public void add_play_button(){
+        preview.setClickable(false);
+        play.setVisibility(View.VISIBLE);
+    }
+
+    public void add_audio_button(){
+        preview.setVisibility(View.INVISIBLE);
+        play.setVisibility(View.INVISIBLE);
+        play.setClickable(false);
+        audio.setVisibility(View.VISIBLE);
+    }
+
+    public void setCategory(String cat){
+
+        category.setText(cat);
+    }
+
 
 }
 

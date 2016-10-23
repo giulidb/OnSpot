@@ -6,16 +6,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import com.google.firebase.auth.FirebaseAuth;
-
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 
 public class MainActivity extends AppCompatActivity  {
 
     static final String EXTRA_MESSAGE = "it.unipi.iet.onspot.MESSAGE";
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseAuth mAuth;
     private AuthUtilities AuthUt;
     private String TAG = "MainActivity";
 

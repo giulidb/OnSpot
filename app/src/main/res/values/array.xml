@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/tools">
     <string-array name="genders">
         <item>Male</item>
         <item>Female</item>
+    </string-array>
+
+    <string-array name="categories">
+        <item>Bla Bla</item>
+        <item>Food</item>
+        <item>Landscape</item>
+        <item>Live Music</item>
+        <item>Sports</item>
+        <item>Streat Art</item>
+
     </string-array>
 </resources>

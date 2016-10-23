@@ -42,7 +42,7 @@
         android:inputType="textPersonName"
         android:hint="@string/first_name"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/firstName"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
@@ -52,9 +52,9 @@
         android:inputType="textPersonName"
         android:hint="@string/last_name"
         android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/editText"
-        android:layout_alignEnd="@+id/editText"
+        android:id="@+id/lastName"
+        android:layout_below="@+id/firstName"
+        android:layout_alignEnd="@+id/firstName"
         android:layout_centerHorizontal="true"/>
 
     <EditText
@@ -63,28 +63,28 @@
         android:inputType="date"
         android:hint="@string/birthday"
         android:ems="10"
-        android:id="@+id/editText3"
-        android:layout_below="@+id/editText2"
-        android:layout_alignStart="@+id/editText2"
+        android:id="@+id/birthday"
+        android:layout_below="@+id/lastName"
+        android:layout_alignStart="@+id/lastName"
         android:focusable="false"
         android:layout_centerHorizontal="true"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText4"
+        android:id="@+id/gender"
         android:focusable="false"
         android:hint="@string/gender"
-        android:layout_below="@+id/editText3"
-        android:layout_alignStart="@+id/editText3"
-        android:layout_alignEnd="@+id/editText3" />
+        android:layout_below="@+id/birthday"
+        android:layout_alignStart="@+id/birthday"
+        android:layout_alignEnd="@+id/birthday" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/join"
-        android:id="@+id/button5"
-        android:layout_below="@+id/editText4"
+        android:id="@+id/join"
+        android:layout_below="@+id/gender"
         android:layout_centerHorizontal="true" />
 
 

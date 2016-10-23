@@ -7,7 +7,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -24,26 +27,32 @@ public class MultimediaUtilities {
 
     /* function to create and launch an intent to pick multimedia file from other app like
      camera or audio recorder or from the file system */
-    public static void create_intent(String file, Activity activity){
+    public static void create_intent(String file, Activity activity) {
 
-        String TAG = "MultimediaUtilities";
-        final int RESULT_LOAD = 1;
+        final int IMAGE_REQUEST_CODE = 1;
+        final int VIDEO_REQUEST_CODE = 2;
+        final int AUDIO_REQUEST_CODE = 3;
+
 
         // Camera or VideoCamera or AudioRegister
         final List<Intent> fileIntents = new ArrayList<>();
         final Intent captureIntent;
 
         // Discriminate app to launch in base on the String file: image,video or audio
-            if(file.equals("image")){
-                captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);}
-            else if(file.equals("video")){
+        switch (file) {
+            case "image":
+                captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                break;
+            case "video":
                 captureIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
-            }else
+                break;
+            default:
                 captureIntent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        }
 
         final PackageManager packageManager = activity.getPackageManager();
         final List<ResolveInfo> listFile = packageManager.queryIntentActivities(captureIntent, 0);
-        for(ResolveInfo res : listFile) {
+        for (ResolveInfo res : listFile) {
             final String packageName = res.activityInfo.packageName;
             final Intent intent = new Intent(captureIntent);
             intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
@@ -53,15 +62,25 @@ public class MultimediaUtilities {
 
         // Filesystem, String file determine the kind of file to search in the filesystem
         final Intent galleryIntent = new Intent();
-        galleryIntent.setType(file+"/*");
+        galleryIntent.setType(file + "/*");
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 
         // Chooser of filesystem options.
         final Intent chooserIntent = Intent.createChooser(galleryIntent, "Complete action using");
 
-        // Add the camera options.
+        // Add the multimedia app options.
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, fileIntents.toArray(new Parcelable[fileIntents.size()]));
-        activity.startActivityForResult(chooserIntent, RESULT_LOAD);
+
+        switch (file) {
+            case "image":
+                activity.startActivityForResult(chooserIntent, IMAGE_REQUEST_CODE);
+                break;
+            case "video":
+                activity.startActivityForResult(chooserIntent, VIDEO_REQUEST_CODE);
+                break;
+            case "audio":
+                activity.startActivityForResult(chooserIntent, AUDIO_REQUEST_CODE);
+        }
 
     }
 
@@ -69,7 +88,7 @@ public class MultimediaUtilities {
     * the correct rotation
     */
 
-    public static Bitmap rotateBitmap(Bitmap bm, String path ) {
+    public static Bitmap rotateBitmap(Bitmap bm, String path) {
 
         String TAG = "MultimediaUtilities";
 
@@ -85,7 +104,7 @@ public class MultimediaUtilities {
         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_UNDEFINED);
 
-        Log.d(TAG,"bitmap orientation: " + orientation);
+        Log.d(TAG, "bitmap orientation: " + orientation);
 
         Matrix matrix = new Matrix();
         switch (orientation) {
@@ -122,31 +141,61 @@ public class MultimediaUtilities {
             Bitmap bmRotated = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
             bm.recycle();
             return bmRotated;
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    /* Function that return the real path of an image from its URI */
+    /*  Scales the image the minimum amount while making sure that at least
+      * one of the two dimensions fit inside the requested destination area.
+      * Parts of the source image will be cropped to realize this.*/
+    public static Bitmap resize(Bitmap image, int width, int heigth) {
 
-    public static String getImagePath(Activity activity,Uri uri){
-        Cursor cursor = activity.getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":")+1);
-        cursor.close();
+        Rect srcRect;
+        int srcWidth = image.getWidth();
+        int srcHeight = image.getHeight();
 
-        cursor = activity.getContentResolver().query(
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        cursor.close();
+        // Calculates source rectangle for scaling bitmap
+        final float srcAspect = (float) srcWidth / (float) srcHeight;
+        final float dstAspect = (float) width / (float) heigth;
 
-        return path;
+        if (srcAspect > dstAspect) {
+            final int srcRectWidth = (int) (srcHeight * dstAspect);
+            final int srcRectLeft = (srcWidth - srcRectWidth) / 2;
+            srcRect = new Rect(srcRectLeft, 0, srcRectLeft + srcRectWidth, srcHeight);
+        } else {
+            final int srcRectHeight = (int) (srcWidth / dstAspect);
+            final int scrRectTop = (srcHeight - srcRectHeight) / 2;
+            srcRect = new Rect(0, scrRectTop, srcWidth, scrRectTop + srcRectHeight);
+        }
+
+        Rect dstRect = new Rect(0, 0, width, heigth);
+
+        Bitmap scaledBitmap = Bitmap.createBitmap(dstRect.width(), dstRect.height(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(scaledBitmap);
+        canvas.drawBitmap(image, srcRect, dstRect, new Paint(Paint.FILTER_BITMAP_FLAG));
+        return scaledBitmap;
     }
 
+
+
+
+    /* Function that return the real path of an image from its URI */
+    public static String getRealPathFromURI(Activity activity, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = activity.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
 
 }

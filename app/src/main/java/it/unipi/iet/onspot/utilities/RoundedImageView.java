@@ -45,8 +45,7 @@ public class RoundedImageView extends ImageView {
     public static Bitmap getRoundedCroppedBitmap(Bitmap bitmap, int radius) {
         Bitmap finalBitmap;
         if (bitmap.getWidth() != radius || bitmap.getHeight() != radius)
-            finalBitmap = Bitmap.createScaledBitmap(bitmap, radius, radius,
-                    false);
+            finalBitmap = MultimediaUtilities.resize(bitmap,radius,radius);
         else
             finalBitmap = bitmap;
         Bitmap output = Bitmap.createBitmap(finalBitmap.getWidth(),
@@ -62,9 +61,15 @@ public class RoundedImageView extends ImageView {
         paint.setDither(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(Color.parseColor("#BAB399"));
+        if(finalBitmap.getWidth() > finalBitmap.getHeight()){
         canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f,
                 finalBitmap.getHeight() / 2 + 0.7f,
-                finalBitmap.getWidth() / 2 + 0.1f, paint);
+                finalBitmap.getHeight() / 2 +0.1f, paint);}
+        else{
+            canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f,
+                    finalBitmap.getHeight() / 2 + 0.7f,
+                    finalBitmap.getWidth() / 2 + 0.1f, paint);
+        }
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
         canvas.drawBitmap(finalBitmap, rect, rect, paint);
 

@@ -1,5 +1,4 @@
 package it.unipi.iet.onspot;
-
 import android.app.DatePickerDialog;
 import java.io.IOException;
 import java.util.Calendar;
@@ -7,8 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
+import it.unipi.iet.onspot.utilities.PermissionUtilities;
 import it.unipi.iet.onspot.utilities.RoundedImageView;
 
 
@@ -31,14 +33,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private EditText gender;
     EditText firstName;
     EditText lastName;
-    private Button butt;
-    private ImageView edit_photo;
     AlertDialog.Builder builder;
     Uri photo_uri = null;
     AlertDialog dialog;
     private String TAG = "ProfileActivity";
     String [] GENDERS = {"Male","Female"};
     AuthUtilities AuthUt;
+    int PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +47,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_profile);
 
         // variables initialization
-        firstName = (EditText)findViewById(R.id.editText);
-        lastName = (EditText)findViewById(R.id.editText2);
-        birthday = (EditText)findViewById(R.id.editText3);
-        gender = (EditText)findViewById(R.id.editText4);
-        butt = (Button)findViewById(R.id.button5);
-        edit_photo = (ImageView)findViewById(R.id.edit_photo);
+        firstName = (EditText)findViewById(R.id.firstName);
+        lastName = (EditText)findViewById(R.id.lastName);
+        birthday = (EditText)findViewById(R.id.birthday);
+        gender = (EditText)findViewById(R.id.gender);
+        Button butt = (Button)findViewById(R.id.join);
+        ImageView edit_photo = (ImageView)findViewById(R.id.edit_photo);
 
         // Set views clickable
         birthday.setOnClickListener(this);
@@ -106,10 +107,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     * Function to change profile photo loading it from camera o gallery
     */
 
-    //TODO: Permission
     public void change_photo(){
 
-       MultimediaUtilities.create_intent("image",this);
+        // Permission
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Log.d(TAG, "Permission check at runtime");
+            if(PermissionUtilities.checkPermission(this, android.Manifest.permission.CAMERA,
+                    PERMISSION_REQUEST_CODE)&&
+                    (PermissionUtilities.checkPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                            PERMISSION_REQUEST_CODE))){
+                MultimediaUtilities.create_intent("image", this);
+            }
+        }
+        else
+            MultimediaUtilities.create_intent("image", this);
+
 
     }
 
@@ -131,6 +143,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         AuthUt.updateUserProfile(Name + " " + Surname,uri);
         Log.d(TAG,"Profile updated: "+ AuthUt.getUser().getDisplayName());
 
+        //TODO: save birthday and gender in the db
+
         // Redirect user to MapsFragment after saved info
         Intent i = new Intent(ProfileActivity.this,MapsActivity.
                 class);
@@ -145,6 +159,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         // retrieve view contained photo profile
         ImageView photo = (ImageView)findViewById(R.id.imageProfile);
+        int max_size = photo.getHeight();
+        int width = photo.getWidth();
+        Log.d(TAG,"Logo size: height="+max_size+" width: "+width);
 
         Bitmap bm = null;
         if (data != null) {
@@ -157,12 +174,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             // Get uri of the bitmap
            photo_uri = data.getData();
             // Get the actual path
-            String path = MultimediaUtilities.getImagePath(this,photo_uri);
+            String path = MultimediaUtilities.getRealPathFromURI(this,photo_uri);
             Log.d(TAG,"Path of bitmap= "+ path);
             // Get right orientation of the image
             bm = MultimediaUtilities.rotateBitmap(bm,path);
+
             // Rounded cropped image
-            bm = RoundedImageView.getRoundedCroppedBitmap(bm,300);
+            bm = RoundedImageView.getRoundedCroppedBitmap(bm,max_size);
             // Set image as profile photo
             photo.setImageBitmap(bm);
         }
@@ -192,15 +210,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        // Discriminate if birthday or Gender EditText or Join button is clicked
-        if(view == birthday){
-            create_date_picker();
-        }else if(view == gender){
-            create_dialog_box();
-        }else if (view == butt){
-            join_user();
-        }else if(view == edit_photo)
-            change_photo();
+        // Discriminate view clicked
+        switch(view.getId()){
+            case R.id.birthday:
+                create_date_picker();
+                break;
+            case R.id.gender:
+                create_dialog_box();
+                break;
+            case R.id.join:
+                join_user();
+                break;
+            case R.id.edit_photo:
+                change_photo();}
     }
 
 @Override
@@ -219,6 +241,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onStop() {
         super.onStop();
         AuthUt.removeListener();
+    }
+
+    /*
+   * Functions for permission handling.
+   */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        MultimediaUtilities.create_intent("image",this);
+
     }
 
 
