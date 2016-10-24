@@ -74,6 +74,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
 
         play.setVisibility(View.INVISIBLE);
         audio.setVisibility(View.INVISIBLE);
+        preview.setVisibility(View.VISIBLE);
         preview.setImageBitmap(bm);
         preview.setClickable(true);
     }
@@ -86,7 +87,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     public void add_audio_button(){
         preview.setVisibility(View.INVISIBLE);
         play.setVisibility(View.INVISIBLE);
-        play.setClickable(false);
         audio.setVisibility(View.VISIBLE);
     }
 
