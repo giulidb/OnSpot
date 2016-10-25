@@ -373,32 +373,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (path != null){
         Log.d(TAG,"reproduce_media");
-        Intent viewMediaIntent = new Intent();
-        viewMediaIntent.setAction(android.content.Intent.ACTION_VIEW);
-        File file = new File(path);
-        switch(view.getId()){
-            case R.id.play:
-                viewMediaIntent.setDataAndType(Uri.fromFile(file), "video/*");
-                break;
-            case R.id.load:
-                viewMediaIntent.setDataAndType(Uri.fromFile(file), "image/*");
-                break;
-            case R.id.audio:
-                viewMediaIntent.setDataAndType(Uri.fromFile(file), "audio/*");}
-        viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(viewMediaIntent);}
+            MultimediaUtilities.open_media(view.getId(),path,this);
+       }
     }
 
     /* Function for categories */
     public void show_categories(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-        builder.setTitle("Select category")
+        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
+        builder.setTitle("Choose a category")
                 .setItems(R.array.categories, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
                         String[] categories = getResources().getStringArray(R.array.categories);
-                        Log.d(TAG,"Genders "+ categories[which] + " selected");
+                        Log.d(TAG,"Category "+ categories[which] + " selected");
                         // Retrieve Fragment
                         AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
                         fragment.setCategory(categories[which]);

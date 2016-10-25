@@ -37,9 +37,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     Uri photo_uri = null;
     AlertDialog dialog;
     private String TAG = "ProfileActivity";
-    String [] GENDERS = {"Male","Female"};
     AuthUtilities AuthUt;
     int PERMISSION_REQUEST_CODE = 1;
+    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,14 +87,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     // Create Dialog Box to choose gender info
     public void create_dialog_box(){
-        builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder = new AlertDialog.Builder(ProfileActivity.this,R.style.AppDialog);
         builder.setTitle("Select gender")
                 .setItems(R.array.genders, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
-                        Log.d(TAG,"Genders "+ GENDERS[which] + " selected");
-                        gender.setText(GENDERS[which]);
+                        String[] genders = getResources().getStringArray(R.array.genders);
+                        Log.d(TAG,"Genders "+ genders[which] + " selected");
+                        gender.setText(genders[which]);
                         dialog.dismiss();
                     }
                 });
@@ -136,7 +137,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             return;
 
         // check if photo was modified or not
-        Uri avatar = Uri.parse("android.resource://my.package.name/" + R.drawable.avatar_guest);
+        Uri avatar = Uri.parse("android.resource://my.package.name/" + R.drawable.avataryellow);
         Uri uri = (photo_uri != null)? photo_uri : avatar;
 
         // update profile info
@@ -158,10 +159,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
 
         // retrieve view contained photo profile
-        ImageView photo = (ImageView)findViewById(R.id.imageProfile);
+        ImageView photo = (ImageView) findViewById(R.id.imageProfile);
         int max_size = photo.getHeight();
         int width = photo.getWidth();
-        Log.d(TAG,"Logo size: height="+max_size+" width: "+width);
+        Log.d(TAG, "Logo size: height=" + max_size + " width: " + width);
 
         Bitmap bm = null;
         if (data != null) {
@@ -172,22 +173,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             // Get uri of the bitmap
-           photo_uri = data.getData();
+            photo_uri = data.getData();
             // Get the actual path
-            String path = MultimediaUtilities.getRealPathFromURI(this,photo_uri);
-            Log.d(TAG,"Path of bitmap= "+ path);
+            path = MultimediaUtilities.getRealPathFromURI(this, photo_uri);
+            Log.d(TAG, "Path of bitmap= " + path);
             // Get right orientation of the image
-            bm = MultimediaUtilities.rotateBitmap(bm,path);
-
+            bm = MultimediaUtilities.rotateBitmap(bm, path);
             // Rounded cropped image
-            bm = RoundedImageView.getRoundedCroppedBitmap(bm,max_size);
+            bm = RoundedImageView.getRoundedCroppedBitmap(bm, max_size);
             // Set image as profile photo
             photo.setImageBitmap(bm);
+            photo.setOnClickListener(this);
         }
 
-
-
     }
+
+
+
+
 
     // Check if form's fields are compiled properly
     public boolean validate_form(String Name, String Surname){
@@ -222,7 +225,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 join_user();
                 break;
             case R.id.edit_photo:
-                change_photo();}
+                change_photo();
+                break;
+            case R.id.imageProfile:
+                if (path != null){
+                    MultimediaUtilities.open_media(view.getId(), path, this);
+                }
+        }
     }
 
 @Override

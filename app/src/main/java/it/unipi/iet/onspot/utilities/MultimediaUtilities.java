@@ -16,9 +16,14 @@ import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.unipi.iet.onspot.R;
 
 /**
  * Class to manage Multimedia Files;
@@ -198,4 +203,25 @@ public class MultimediaUtilities {
         }
     }
 
-}
+    /* Function to repruce media in full screen */
+    public static void open_media(int viewId, String path, Activity activity){
+
+        Intent viewMediaIntent = new Intent();
+        viewMediaIntent.setAction(android.content.Intent.ACTION_VIEW);
+        File file = new File(path);
+        switch(viewId){
+            case R.id.play:
+                viewMediaIntent.setDataAndType(Uri.fromFile(file), "video/*");
+                break;
+            case R.id.load:
+                viewMediaIntent.setDataAndType(Uri.fromFile(file), "image/*");
+                break;
+            case R.id.imageProfile:
+                viewMediaIntent.setDataAndType(Uri.fromFile(file), "image/*");
+                break;
+            case R.id.audio:
+                viewMediaIntent.setDataAndType(Uri.fromFile(file), "audio/*");}
+        viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        activity.startActivity(viewMediaIntent);}
+    }
+

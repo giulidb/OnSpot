@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         Login = (Button)findViewById(R.id.email_sign_in_button);
 
         // ProgressDialog Initialization
-        progressDialog = new ProgressDialog(LoginActivity.this,ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
 
         // Authentication

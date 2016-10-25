@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#E9E9E9">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:background="#E9E9E9"
+    android:theme="@style/AppTheme"
+    tools:context=".MapsActivity">
 
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:text="@string/add_spot"
-    android:textColor="@android:color/white"
-    android:background="@color/colorPrimary"
-    android:textSize="16sp"
-    android:textAllCaps="true"
-    android:padding="16dp"
-    android:id="@+id/addspot"
-    />
-
-    <RelativeLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="225dp"
         android:id="@+id/layout_inner"
@@ -27,12 +20,13 @@
         android:layout_marginTop="6dp"
         android:layout_marginStart="6dp"
         android:layout_alignEnd="@+id/category"
-        android:layout_alignBottom="@+id/audio_add_spot">
+        android:layout_alignBottom="@+id/audio_add_spot"
+        >
+
         <ImageView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:contentDescription="@string/image"
-            android:clickable="false"
             android:onClick="reproduce_media"
             android:padding="4dp"
             android:scaleType="fitXY"
@@ -41,13 +35,13 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
-        <ImageView
+        <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:contentDescription="@string/image"
             android:padding="4dp"
             android:scaleType="fitXY"
-            android:src="@drawable/play"
+            android:drawableStart="@drawable/play"
             android:id="@+id/play"
             android:clickable="true"
             android:onClick="reproduce_media"
@@ -57,13 +51,13 @@
             style="@style/Widget.AppCompat.ActionButton"
             />
 
-        <ImageView
+        <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:contentDescription="@string/image"
             android:padding="4dp"
             android:scaleType="fitXY"
-            android:src="@drawable/volume"
+            android:drawableStart="@drawable/volume"
             android:id="@+id/audio"
             android:clickable="true"
             android:onClick="reproduce_media"
@@ -73,71 +67,86 @@
             style="@style/Widget.AppCompat.ActionButton"
             />
 
-
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_spot"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="18dp"
+        android:padding="10dp"
+        android:id="@+id/addspot"
+        />
 
     <EditText
-    android:layout_width="300dp"
-    android:layout_height="90dp"
-    android:background="@android:color/white"
-    android:hint="@string/description"
-    android:gravity="top"
-    android:id="@+id/textView2"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:background="@android:color/white"
+        android:hint="@string/description"
+        android:gravity="top"
+        android:id="@+id/textView2"
         android:layout_below="@+id/layout_inner"
         android:layout_alignStart="@+id/layout_inner"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="6dp"
         android:layout_marginTop="6dp"/>
 
-<EditText
-    android:layout_width="wrap_content"
-    android:layout_height="50dp"
-    android:hint="@string/category"
-    android:background="@android:color/white"
-    android:focusable="false"
-    android:id="@+id/category"
-    android:layout_below="@+id/textView2"
-    android:layout_alignParentStart="true"
-    android:layout_toStartOf="@+id/dots"
-    android:layout_marginStart="6dp"
-    android:layout_marginEnd="6dp"
-    android:layout_marginTop="6dp"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:id="@+id/button6"
+        style="@style/ButtonStyle"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/category"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="6dp"
+        />
 
-    <ImageView
+
+    <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/dots"
         android:contentDescription="@string/image"
-        android:src="@drawable/dots"
+        android:drawableStart="@drawable/dots"
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:onClick="show_categories"
         android:padding="5dp"
         android:scaleType="fitXY"
         style="@style/Widget.AppCompat.ActionButton"
-        android:layout_above="@+id/button6"
+        android:layout_above="@id/button6"
+        android:layout_alignTop="@id/category"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="6dp"/>
 
-<Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/save"
-    android:id="@+id/button6"
-    android:textColor="@android:color/white"
-    android:background="@color/colorPrimary"
-    android:layout_below="@+id/category"
-    android:layout_alignParentStart="true"
-    android:layout_marginTop="6dp"
-    />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:hint="@string/category"
+        android:background="@android:color/white"
+        android:focusable="false"
+        android:id="@+id/category"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/dots"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="6dp"/>
 
-    <ImageView
+
+
+
+    <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/video_add_spot"
         android:contentDescription="@string/image"
-        android:src="@drawable/video"
+        android:drawableStart="@drawable/video"
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:padding="5dp"
@@ -148,12 +157,12 @@
         android:layout_marginTop="6dp"
         android:layout_alignEnd="@id/dots"/>
 
-    <ImageView
+    <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/audio_add_spot"
         android:contentDescription="@string/image"
-        android:src="@drawable/microphone"
+        android:drawableStart="@drawable/microphone"
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:onClick="AddSpot_onClick"
@@ -164,12 +173,12 @@
         android:layout_marginTop="6dp"
         android:layout_alignEnd="@id/dots"  />
 
-    <ImageView
+    <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/image_add_spot"
         android:contentDescription="@string/image"
-        android:src="@drawable/image"
+        android:drawableStart="@drawable/image"
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:onClick="AddSpot_onClick"

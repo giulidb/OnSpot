@@ -62,4 +62,13 @@ public class MainActivity extends AppCompatActivity  {
         super.onStop();
         AuthUt.removeListener();
     }
+
+    /*
+     * Disable going back function
+     */
+    @Override
+    public void onBackPressed() {
+        // disable going back to the previous Activity
+        moveTaskToBack(true);
+    }
 }

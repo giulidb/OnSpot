@@ -10,6 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -21,8 +22,8 @@ import android.widget.ImageView;
 public class AddSpotFragment extends BottomSheetDialogFragment {
 
     private ImageView preview;
-    private ImageView play;
-    private ImageView audio;
+    private Button play;
+    private Button audio;
     private EditText category;
 
 
@@ -63,8 +64,9 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_addspot, container, false);
         preview = (ImageView) view.findViewById(R.id.load);
-        play = (ImageView) view.findViewById(R.id.play);
-        audio = (ImageView) view.findViewById(R.id.audio);
+        preview.setClickable(false);
+        play = (Button) view.findViewById(R.id.play);
+        audio = (Button) view.findViewById(R.id.audio);
         category = (EditText) view.findViewById(R.id.category);
 
         return view;

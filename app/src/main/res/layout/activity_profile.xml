@@ -16,12 +16,13 @@
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
         android:id="@+id/imageProfile"
-        android:src="@drawable/avatar_guest"
+        android:src="@drawable/avataryellow"
         android:contentDescription="@string/avatarprofile"
         android:layout_marginTop="40dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <ImageView
+    <ImageButton
         android:layout_height="35dp"
         android:layout_width="35dp"
         android:contentDescription="image"
@@ -34,7 +35,8 @@
         android:layout_marginEnd="20dp"
         android:id="@+id/edit_photo"
         android:layout_alignBottom="@+id/imageProfile"
-        android:layout_alignEnd="@+id/imageProfile" />
+        android:layout_alignEnd="@+id/imageProfile"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -82,10 +84,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/gender"
+        android:layout_alignStart="@id/gender"
+        style="@style/ButtonStyle"
         android:text="@string/join"
         android:id="@+id/join"
         android:layout_below="@+id/gender"
         android:layout_centerHorizontal="true" />
-
 
 </RelativeLayout>
