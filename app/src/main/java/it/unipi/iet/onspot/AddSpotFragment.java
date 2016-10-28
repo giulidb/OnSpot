@@ -105,5 +105,9 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         return description.getText().toString();
     }
 
+    public String getCategory() {
+        return category.getText().toString();
+    }
+
 }
 

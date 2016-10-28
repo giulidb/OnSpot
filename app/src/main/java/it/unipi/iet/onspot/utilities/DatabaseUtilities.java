@@ -32,10 +32,11 @@ public class DatabaseUtilities {
     }
 
     // Insert a new spot in the db
-    public void writeNewSpot(String userId, String description, double Lat, double Lng, String time) {
+    public void writeNewSpot(String userId, String description, String category, String contentURL,
+                             double Lat, double Lng, String time) {
 
         DatabaseReference newRef = mDatabase.child("spots").push();
-        newRef.setValue(new Spot(userId, description, Lat, Lng, time));
+        newRef.setValue(new Spot(userId, description, category, contentURL, Lat, Lng, time));
 
     }
 

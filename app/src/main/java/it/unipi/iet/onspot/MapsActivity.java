@@ -414,9 +414,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //if(!validate_form(...))
         //    return;
 
-        // Retrieve description
+        // Retrieve description and category
         AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
         String description = fragment.getDescription();
+        String category = fragment.getCategory();
 
         //Retrieve time and date
         String currentTime = DateFormat.getDateTimeInstance().format(new Date());
@@ -429,9 +430,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         double Lat = mLastLocation.getLatitude();
         double Lng = mLastLocation.getLongitude();
 
+        //TODO: Store content in Firebase Storage and retrieve URL
+        String contentURL = "";
+
         //Save spot info in the db
         DatabaseUtilities db = new DatabaseUtilities();
-        db.writeNewSpot(userId, description, Lat, Lng, currentTime);
+        db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
 
         //TODO: tornare alla schermata principale di MapsActivity
     }
