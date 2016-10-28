@@ -29,10 +29,14 @@ public class DatabaseUtilities {
         User user = new User(name, lastName, birthday, gender);
         mDatabase.child("users").child(userId).setValue(user);
 
-
     }
 
+    // Insert a new spot in the db
+    public void writeNewSpot(String userId, String description, double Lat, double Lng, String time) {
 
+        DatabaseReference newRef = mDatabase.child("spots").push();
+        newRef.setValue(new Spot(userId, description, Lat, Lng, time));
 
+    }
 
 }

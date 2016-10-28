@@ -87,7 +87,7 @@
         android:background="@android:color/white"
         android:hint="@string/description"
         android:gravity="top"
-        android:id="@+id/textView2"
+        android:id="@+id/description"
         android:layout_below="@+id/layout_inner"
         android:layout_alignStart="@+id/layout_inner"
         android:layout_alignParentEnd="true"
@@ -98,12 +98,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"
-        android:id="@+id/button6"
+        android:id="@+id/save_button"
         style="@style/ButtonStyle"
         android:textColor="@android:color/white"
         android:layout_below="@+id/category"
         android:layout_alignParentStart="true"
         android:layout_marginTop="6dp"
+        android:onClick="saveSpot"
         />
 
 
@@ -119,7 +120,7 @@
         android:padding="5dp"
         android:scaleType="fitXY"
         style="@style/Widget.AppCompat.ActionButton"
-        android:layout_above="@id/button6"
+        android:layout_above="@id/save_button"
         android:layout_alignTop="@id/category"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="6dp"/>
@@ -131,7 +132,7 @@
         android:background="@android:color/white"
         android:focusable="false"
         android:id="@+id/category"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/description"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@id/dots"
         android:layout_marginStart="6dp"

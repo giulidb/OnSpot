@@ -25,6 +25,8 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     private Button play;
     private Button audio;
     private EditText category;
+    private Button save;
+    private EditText description;
 
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -68,6 +70,8 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         play = (Button) view.findViewById(R.id.play);
         audio = (Button) view.findViewById(R.id.audio);
         category = (EditText) view.findViewById(R.id.category);
+        save = (Button) view.findViewById(R.id.save_button);
+        description = (EditText) view.findViewById(R.id.description);
 
         return view;
     }
@@ -97,6 +101,9 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         category.setText(cat);
     }
 
+    public String getDescription() {
+        return description.getText().toString();
+    }
 
 }
 

@@ -34,8 +34,13 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.IOException;
+import java.util.Date;
+import java.text.DateFormat;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
@@ -74,6 +79,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     String TAG = "MapsActivity";
 
+
+    /*
+     * Basic functions
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -103,6 +113,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d(TAG,"User already logged");}
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AuthUt.addListner();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AuthUt.removeListener();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    //Disable going back function
+    @Override
+    public void onBackPressed() {
+        // disable going back to the previous Activity
+        moveTaskToBack(true);
+    }
+
 
     /*
      * GoogleMaps functions
@@ -180,16 +221,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    /*
-     * Disable going back function
-     */
-    @Override
-    public void onBackPressed() {
-        // disable going back to the previous Activity
-        moveTaskToBack(true);
-    }
 
-    /* Functions for the menu*/
+    /*
+     * Menu functions
+     */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -211,29 +247,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        AuthUt.addListner();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        AuthUt.removeListener();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
-
     // onClick for toolbar
     public void toolbarOnClick(View view){
 
@@ -244,6 +257,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
+
+
+    /*
+     * AddSpot functions
+     */
 
     // onClick for add_spot functions
     public void AddSpot_onClick(View view){
@@ -303,9 +321,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-
-
-    // function callback automatically after choosing picture from gallery or camera
+    // Function callback automatically after choosing picture from gallery or camera
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -362,7 +378,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
     }
 
-    /* Function to reproduce media */
+    // Function to reproduce media
     public void reproduce_media(View view){
 
         if (path != null){
@@ -371,7 +387,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
        }
     }
 
-    /* Function for categories */
+    // Function for categories
     public void show_categories(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
@@ -391,9 +407,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.show();
     }
 
+    // Function to store the spot just added by the user in the DB
+    public void saveSpot(View view) {
+
+        //TODO: controllare i campi
+        //if(!validate_form(...))
+        //    return;
+
+        // Retrieve description
+        AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
+        String description = fragment.getDescription();
+
+        //Retrieve time and date
+        String currentTime = DateFormat.getDateTimeInstance().format(new Date());
+
+        //Retrieve userId
+        String userId = AuthUt.getUser().getUid();
+
+        //Retrieve location info
+        //TODO: vedere se c'è un modo migliore
+        double Lat = mLastLocation.getLatitude();
+        double Lng = mLastLocation.getLongitude();
+
+        //Save spot info in the db
+        DatabaseUtilities db = new DatabaseUtilities();
+        db.writeNewSpot(userId, description, Lat, Lng, currentTime);
+
+        //TODO: tornare alla schermata principale di MapsActivity
+    }
+
+
     /*
      * Functions for permission handling.
      */
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
