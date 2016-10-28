@@ -1,5 +1,3 @@
-//TODO: vedere se è effettivamente utile questa classe o no
-
 package it.unipi.iet.onspot.utilities;
 
 import android.net.Uri;
@@ -7,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -51,6 +48,9 @@ public class AuthUtilities {
 
         // User initialization
         user = mAuth.getCurrentUser();
+        Log.d(TAG,"User: "+ user);
+
+
 
     }
 
@@ -60,6 +60,14 @@ public class AuthUtilities {
         return mAuth.getCurrentUser();
     }
 
+
+    // Get User's photoUrl
+    public Uri getPhoto_url(){
+        return user.getPhotoUrl();
+    }
+
+    // Get User's name
+    public String getDisplayName(){return user.getDisplayName();}
 
     // Return Firebase Auth
     public FirebaseAuth get_mAuth(){return mAuth;}
@@ -102,6 +110,7 @@ public class AuthUtilities {
     // Update User's profile
     public void updateUserProfile(String Name, Uri PhotoUri){
 
+
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(Name)
                 .setPhotoUri(PhotoUri)
@@ -116,6 +125,9 @@ public class AuthUtilities {
                         }
                     }
                 });
+
+
+
     }
 
     // Add Auth State listener

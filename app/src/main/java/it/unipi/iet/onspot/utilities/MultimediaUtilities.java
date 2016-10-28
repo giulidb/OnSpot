@@ -1,6 +1,7 @@
 package it.unipi.iet.onspot.utilities;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -222,6 +224,7 @@ public class MultimediaUtilities {
             case R.id.audio:
                 viewMediaIntent.setDataAndType(Uri.fromFile(file), "audio/*");}
         viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(viewMediaIntent);}
+        activity.startActivity(viewMediaIntent);
+        }
     }
 

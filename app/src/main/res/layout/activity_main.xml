@@ -56,7 +56,7 @@
         android:layout_below="@+id/button2"
         android:layout_centerHorizontal="true"
         android:paddingStart="80dp"
-        android:paddingEnd="80dp"
+        android:paddingEnd="10dp"
         android:textAlignment="textStart"
         />
 

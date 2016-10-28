@@ -19,8 +19,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 import it.unipi.iet.onspot.utilities.RoundedImageView;
@@ -131,6 +131,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         String Name = firstName.getText().toString();
         String Surname = lastName.getText().toString();
+        String day = birthday.getText().toString();
+        String gen = gender.getText().toString();
 
         //check format email and password
         if(!validate_form(Name,Surname))
@@ -142,9 +144,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         // update profile info
         AuthUt.updateUserProfile(Name + " " + Surname,uri);
-        Log.d(TAG,"Profile updated: "+ AuthUt.getUser().getDisplayName());
+        Log.d(TAG,"Profile updated: "+ AuthUt.getDisplayName());
 
-        //TODO: save birthday and gender in the db
+        // save user extra personal info in the db
+        DatabaseUtilities db = new DatabaseUtilities();
+        db.writeNewUser(AuthUt.getUser().getUid(),Name,Surname,day,gen);
 
         // Redirect user to MapsFragment after saved info
         Intent i = new Intent(ProfileActivity.this,MapsActivity.
