@@ -6,10 +6,11 @@
     </string-array>
 
     <string-array name="categories">
-        <item>Bla Bla</item>
+        <item>Dining Out</item>
         <item>Food</item>
         <item>Landscape</item>
         <item>Live Music</item>
+        <item>Shopping</item>
         <item>Sports</item>
         <item>Streat Art</item>
 

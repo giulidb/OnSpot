@@ -23,7 +23,6 @@ import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
-import it.unipi.iet.onspot.utilities.RoundedImageView;
 
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
@@ -184,7 +183,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             // Get right orientation of the image
             bm = MultimediaUtilities.rotateBitmap(bm, path);
             // Rounded cropped image
-            bm = RoundedImageView.getRoundedCroppedBitmap(bm, max_size);
+            bm = MultimediaUtilities.getRoundedCroppedBitmap(bm, max_size);
             // Set image as profile photo
             photo.setImageBitmap(bm);
             photo.setOnClickListener(this);

@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 /**
- *  BottomSheetDialogFragment to display in the bootom sheet when a user want to
+ *  BottomSheetDialogFragment to display in the bottom sheet when a user want to
  *  add a new spot on the map.
  */
 

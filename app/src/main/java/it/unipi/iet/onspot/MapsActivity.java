@@ -57,9 +57,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Permission request codes
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    public static final int CAMERA_PERMISSION_REQUEST_CODE = 2;
-    public static final int READ_EXTERNAL_PERMISSION_REQUEST_CODE = 3;
-    public static final int WRITE_EXTERNAL_PERMISSION_REQUEST_CODE = 4;
+    public static final int PHOTO_PERMISSION_REQUEST_CODE = 2;
+    public static final int VIDEO_PERMISSION_REQUEST_CODE = 3;
     public static final int MICROPHONE_PERMISSION_REQUEST_CODE = 5;
 
     // Multimedia Intent request codes
@@ -258,9 +257,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.d(TAG, "Permission check at runtime");
                         if(PermissionUtilities.checkPermission(this,Manifest.permission.CAMERA,
-                                CAMERA_PERMISSION_REQUEST_CODE)&&
+                                PHOTO_PERMISSION_REQUEST_CODE)&&
                                 (PermissionUtilities.checkPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE,
-                                READ_EXTERNAL_PERMISSION_REQUEST_CODE))){
+                                        PHOTO_PERMISSION_REQUEST_CODE))){
                             MultimediaUtilities.create_intent("image", this);
                         }
                     }
@@ -275,9 +274,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.d(TAG, "Permission check at runtime");
                         if(PermissionUtilities.checkPermission(this,Manifest.permission.CAMERA,
-                                CAMERA_PERMISSION_REQUEST_CODE)&&
-                                PermissionUtilities.checkPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE,
-                                        WRITE_EXTERNAL_PERMISSION_REQUEST_CODE)){
+                                VIDEO_PERMISSION_REQUEST_CODE)){
                         MultimediaUtilities.create_intent("video", this);
                         }
                     }
@@ -294,7 +291,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if(PermissionUtilities.checkPermission(this,Manifest.permission.RECORD_AUDIO,
                                 MICROPHONE_PERMISSION_REQUEST_CODE)&&
                         (PermissionUtilities.checkPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE,
-                                READ_EXTERNAL_PERMISSION_REQUEST_CODE))){
+                                MICROPHONE_PERMISSION_REQUEST_CODE))){
                             MultimediaUtilities.create_intent("audio", this);
                         }
                     }
@@ -397,7 +394,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /*
      * Functions for permission handling.
      */
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
@@ -427,46 +423,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
 
 
-            case CAMERA_PERMISSION_REQUEST_CODE:
+            case PHOTO_PERMISSION_REQUEST_CODE:
+                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        Manifest.permission.CAMERA) ||PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) ) {
+
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(this,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    == PackageManager.PERMISSION_GRANTED) {
+
+                        // Call intent for image
+                        MultimediaUtilities.create_intent("image", this);
+                    }
+                }
+                    else {
+                    // permission denied
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();}
+
+            case VIDEO_PERMISSION_REQUEST_CODE:
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
                         Manifest.permission.CAMERA)) {
 
                     // permission was granted
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                    }
-                }
-                    else {
-                    // permission denied
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();}
-                break;
+                            == PackageManager.PERMISSION_GRANTED)  {
 
-            case READ_EXTERNAL_PERMISSION_REQUEST_CODE:
-                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-                    // permission was granted
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-
-                    }
-                }else {
-                        // permission denied
-                        Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
-                    }
-                break;
-
-            case WRITE_EXTERNAL_PERMISSION_REQUEST_CODE:
-                if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                    // permission was granted
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
+                        // Call intent for video
                         MultimediaUtilities.create_intent("video", this);
                     }
                 } else {
@@ -477,12 +464,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             case MICROPHONE_PERMISSION_REQUEST_CODE:
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
-                        Manifest.permission.RECORD_AUDIO)) {
+                        Manifest.permission.RECORD_AUDIO) || PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                     // permission was granted
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.RECORD_AUDIO)
-                            == PackageManager.PERMISSION_GRANTED) {
+                            == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(this,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    == PackageManager.PERMISSION_GRANTED) {
+
+                        // Call intent for audio
                         MultimediaUtilities.create_intent("audio", this);
                     }
                 } else {

@@ -1,7 +1,6 @@
 package it.unipi.iet.onspot.utilities;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,17 +8,18 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,6 +95,7 @@ public class MultimediaUtilities {
     * the correct rotation
     */
 
+    @Nullable
     public static Bitmap rotateBitmap(Bitmap bm, String path) {
 
         String TAG = "MultimediaUtilities";
@@ -205,7 +206,7 @@ public class MultimediaUtilities {
         }
     }
 
-    /* Function to repruce media in full screen */
+    /* Function to reproduce media in full screen */
     public static void open_media(int viewId, String path, Activity activity){
 
         Intent viewMediaIntent = new Intent();
@@ -226,5 +227,41 @@ public class MultimediaUtilities {
         viewMediaIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         activity.startActivity(viewMediaIntent);
         }
+
+
+    /* function to Rounded crop an Image */
+    public static Bitmap getRoundedCroppedBitmap(Bitmap bitmap, int radius) {
+        Bitmap finalBitmap;
+        if (bitmap.getWidth() != radius || bitmap.getHeight() != radius)
+            finalBitmap = MultimediaUtilities.resize(bitmap,radius,radius);
+        else
+            finalBitmap = bitmap;
+        Bitmap output = Bitmap.createBitmap(finalBitmap.getWidth(),
+                finalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, finalBitmap.getWidth(),
+                finalBitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.parseColor("#BAB399"));
+        if(finalBitmap.getWidth() > finalBitmap.getHeight()){
+            canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f,
+                    finalBitmap.getHeight() / 2 + 0.7f,
+                    finalBitmap.getHeight() / 2 +0.1f, paint);}
+        else{
+            canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f,
+                    finalBitmap.getHeight() / 2 + 0.7f,
+                    finalBitmap.getWidth() / 2 + 0.1f, paint);
+        }
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(finalBitmap, rect, rect, paint);
+
+        return output;
+    }
     }
 
