@@ -45,6 +45,7 @@ import java.text.DateFormat;
 import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
+import it.unipi.iet.onspot.utilities.StorageUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
@@ -417,32 +418,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-        //TODO: controllare i campi
-        //if(!validate_form(...))
-        //    return;
-
-        // Retrieve description and category
         AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
+
+        // Retrieve description, category and content path
         String description = fragment.getDescription();
         String category = fragment.getCategory();
+        String path = fragment.getContentPath();
 
-        //Retrieve time and date
-        String currentTime = DateFormat.getDateTimeInstance().format(new Date());
+        //Check if there is something missing in the fields
+        if(description.isEmpty()) {
+            Toast.makeText(this, "Description field cannot be empty.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(category.isEmpty()) {
+            Toast.makeText(this, "Category field cannot be empty.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(path.isEmpty()) {
+            Toast.makeText(this, "You have to load a photo, video or audio track.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         //Retrieve userId
         String userId = AuthUt.getUser().getUid();
 
-        //Retrieve location info
-        //TODO: vedere se c'è un modo migliore
-        double Lat = mLastLocation.getLatitude();
-        double Lng = mLastLocation.getLongitude();
+        //Save spot multimedia content in the storage
+        StorageUtilities st = new StorageUtilities();
+        String contentURL = st.storeNewFile(path, userId);
 
-        //TODO: Store content in Firebase Storage and retrieve URL
-        String contentURL = "";
+        //Continues only if the content has been uploaded correctly, otherwise it stops
+        if(contentURL.isEmpty()) {
+            Toast.makeText(this, "Error in uploading the file. Try again later.", Toast.LENGTH_LONG).show();
+        } else {
+            //Retrieve time and date
+            String currentTime = DateFormat.getDateTimeInstance().format(new Date());
 
-        //Save spot info in the db
-        DatabaseUtilities db = new DatabaseUtilities();
-        db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+            //Retrieve location info
+            //TODO: vedere se c'è un modo migliore
+            double Lat = mLastLocation.getLatitude();
+            double Lng = mLastLocation.getLongitude();
+
+            //Save spot info in the db
+            DatabaseUtilities db = new DatabaseUtilities();
+            db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+        }
 
         //TODO: tornare alla schermata principale di MapsActivity
     }

@@ -25,7 +25,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     private Button play;
     private Button audio;
     private EditText category;
-    private Button save;
     private EditText description;
 
 
@@ -45,7 +44,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         }
     };
 
-   // Inflate a new layout file and retrieve the BottomSheetBehavior of the container view
+    // Inflate a new layout file and retrieve the BottomSheetBehavior of the container view
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
@@ -70,7 +69,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         play = (Button) view.findViewById(R.id.play);
         audio = (Button) view.findViewById(R.id.audio);
         category = (EditText) view.findViewById(R.id.category);
-        save = (Button) view.findViewById(R.id.save_button);
         description = (EditText) view.findViewById(R.id.description);
 
         return view;
@@ -96,17 +94,20 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         audio.setVisibility(View.VISIBLE);
     }
 
-    public void setCategory(String cat){
+    public void setCategory(String cat) { category.setText(cat); }
 
-        category.setText(cat);
-    }
 
-    public String getDescription() {
-        return description.getText().toString();
-    }
+    /*
+     * Functions to retrieve the contents added by the user
+     */
 
-    public String getCategory() {
-        return category.getText().toString();
+    public String getDescription() { return description.getText().toString(); }
+
+    public String getCategory() { return category.getText().toString(); }
+
+    public String getContentPath() {
+        //TODO: deve venire fuori il path del file sul dispositivo (anche File andrebbe bene, se torna meglio)
+        return "";
     }
 
 }
