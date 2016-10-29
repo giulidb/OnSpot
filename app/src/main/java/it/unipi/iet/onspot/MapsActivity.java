@@ -423,7 +423,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Retrieve description, category and content path
         String description = fragment.getDescription();
         String category = fragment.getCategory();
-        String path = fragment.getContentPath();
 
         //Check if there is something missing in the fields
         if(description.isEmpty()) {
@@ -463,7 +462,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
         }
 
-        //TODO: tornare alla schermata principale di MapsActivity
+        //Dismiss the fragment and return to the main menu
+        fragment.setHidden();
     }
 
 

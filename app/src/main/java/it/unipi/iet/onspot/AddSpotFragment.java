@@ -96,6 +96,10 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
 
     public void setCategory(String cat) { category.setText(cat); }
 
+    public void setHidden() {
+        //TODO: fare in modo di poter fare BottomSheetBehavior.setState(STATE_HIDDEN)
+    }
+
 
     /*
      * Functions to retrieve the contents added by the user
@@ -104,11 +108,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     public String getDescription() { return description.getText().toString(); }
 
     public String getCategory() { return category.getText().toString(); }
-
-    public String getContentPath() {
-        //TODO: deve venire fuori il path del file sul dispositivo (anche File andrebbe bene, se torna meglio)
-        return "";
-    }
 
 }
 
