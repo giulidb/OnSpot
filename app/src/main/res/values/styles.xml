@@ -36,9 +36,8 @@
         <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="textColorAlertDialogListItem">@color/colorAccent</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:background">@android:color/white</item>
+        <item name="textColorAlertDialogListItem">@android:color/white</item>
+        <item name="android:background">@color/colorAccentLight</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:width">30dip</item>
@@ -52,8 +51,8 @@
     <style name="TextAppearance.DialogWindowTitle" parent="@android:style/TextAppearance.Holo.DialogWindowTitle">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">20px </item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">20sp</item>
         <item name="android:padding">12dip</item>
     </style>
 

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,6 +41,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.io.IOException;
 import java.util.Date;
 import java.text.DateFormat;
+
+import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
@@ -389,15 +393,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Function for categories
     public void show_categories(View view){
+        final String [] items = getResources().getStringArray(R.array.categories_names);
+        final TypedArray icons = getResources().obtainTypedArray(R.array.categories_icons);
+        ListAdapter adapter = new ArrayAdapterWithIcon(this, items,icons);
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
-                .setItems(R.array.categories, new DialogInterface.OnClickListener() {
+                .setAdapter(adapter,new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
-                        String[] categories = getResources().getStringArray(R.array.categories);
+                        String[] categories = getResources().getStringArray(R.array.categories_names);
                         Log.d(TAG,"Category "+ categories[which] + " selected");
-                        // Retrieve Fragment
+                        //Retrieve Fragment
                         AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
                         fragment.setCategory(categories[which]);
                         dialog.dismiss();

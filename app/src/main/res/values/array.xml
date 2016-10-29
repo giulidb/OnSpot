@@ -5,14 +5,24 @@
         <item>Female</item>
     </string-array>
 
-    <string-array name="categories">
+    <string-array name="categories_names">
         <item>Dining Out</item>
         <item>Food</item>
         <item>Landscape</item>
         <item>Live Music</item>
         <item>Shopping</item>
         <item>Sports</item>
-        <item>Streat Art</item>
-
+        <item>Art</item>
     </string-array>
+
+    <string-array name="categories_icons">
+        <item>@drawable/martini</item>
+        <item>@drawable/food</item>
+        <item>@drawable/mountain</item>
+        <item>@drawable/guitar</item>
+        <item>@drawable/shopping</item>
+        <item>@drawable/soccer</item>
+        <item>@drawable/palette</item>
+    </string-array>
+
 </resources>
