@@ -1,12 +1,8 @@
 package it.unipi.iet.onspot.utilities;
 
-import android.net.Uri;
-
 import com.google.firebase.database.IgnoreExtraProperties;
 
-
-
-/* Java Object represent the user in the db */
+/* Java Object representing the spot in the db */
 @IgnoreExtraProperties
 public class Spot {
 

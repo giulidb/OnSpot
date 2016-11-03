@@ -26,6 +26,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     private Button audio;
     private EditText category;
     private EditText description;
+    CoordinatorLayout.Behavior behavior;
 
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -52,7 +53,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         dialog.setContentView(contentView);
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
-        CoordinatorLayout.Behavior behavior = params.getBehavior();
+        behavior = params.getBehavior();
 
         if( behavior != null && behavior instanceof BottomSheetBehavior ) {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
@@ -97,7 +98,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     public void setCategory(String cat) { category.setText(cat); }
 
     public void setHidden() {
-        //TODO: fare in modo di poter fare BottomSheetBehavior.setState(STATE_HIDDEN)
+        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
 

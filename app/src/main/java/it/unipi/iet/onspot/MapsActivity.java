@@ -1,6 +1,7 @@
 package it.unipi.iet.onspot;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,8 +37,13 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.text.DateFormat;
@@ -45,7 +51,6 @@ import java.text.DateFormat;
 import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
-import it.unipi.iet.onspot.utilities.StorageUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
@@ -56,11 +61,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                                 LocationListener {
 
     // GoogleMaps variables
-    GoogleMap mGoogleMap;
-    SupportMapFragment mapFrag;
-    LocationRequest mLocationRequest;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
+    private GoogleMap mGoogleMap;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
 
     // Firebase variables
     private AuthUtilities AuthUt;
@@ -76,11 +79,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     final int VIDEO_REQUEST_CODE = 2;
     final int AUDIO_REQUEST_CODE = 3;
 
-    // BottomSheetFragment
-    BottomSheetDialogFragment AddSpotFrag;
-
-    // Media file path
-    String path;
+    // Add Spot variables
+    private BottomSheetDialogFragment AddSpotFrag;
+    private String description;
+    private String category;
+    private String path;
+    private ProgressDialog mProgressDialog;
 
     String TAG = "MapsActivity";
 
@@ -105,7 +109,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             PermissionUtilities.checkPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION,
                             LOCATION_PERMISSION_REQUEST_CODE);
         }
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
 
         /*
@@ -154,6 +158,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * GoogleMaps functions
      */
 
+    //TODO: sistemare parte di google maps in modo che zoommi di più senza sbagliare
+    //TODO: e che quando riapri rimanga dov'era l'ultima volta
+
     //Manipulates the map once available.
     @Override
     public void onMapReady(GoogleMap googleMap)
@@ -190,7 +197,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle)
     {
         //Sets up the location request.
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
@@ -199,7 +206,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                                                                    mLocationRequest, this);
         }
     }
 
@@ -207,7 +215,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnectionSuspended(int i) {}
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
     //Callback that fires when the location changes.
     @Override
@@ -268,6 +276,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * AddSpot functions
      */
 
+    // Retrieve fragment
+    public AddSpotFragment retrieveFragment() {
+        return (AddSpotFragment) getSupportFragmentManager()
+                .findFragmentById(AddSpotFrag.getId());
+    }
+
     // onClick for add_spot functions
     public void AddSpot_onClick(View view){
         Log.d(TAG,"View clicked"+ view.getId());
@@ -281,7 +295,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.d(TAG, "Permission check at runtime");
                         if(PermissionUtilities.checkPermission(this,Manifest.permission.CAMERA,
                                 PHOTO_PERMISSION_REQUEST_CODE)&&
-                                (PermissionUtilities.checkPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE,
+                                (PermissionUtilities.checkPermission(this,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE,
                                         PHOTO_PERMISSION_REQUEST_CODE))){
                             MultimediaUtilities.create_intent("image", this);
                         }
@@ -313,7 +328,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.d(TAG, "Permission check at runtime");
                         if(PermissionUtilities.checkPermission(this,Manifest.permission.RECORD_AUDIO,
                                 MICROPHONE_PERMISSION_REQUEST_CODE)&&
-                        (PermissionUtilities.checkPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE,
+                        (PermissionUtilities.checkPermission(this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
                                 MICROPHONE_PERMISSION_REQUEST_CODE))){
                             MultimediaUtilities.create_intent("audio", this);
                         }
@@ -332,7 +348,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
 
         // Retrieve Fragment
-        AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
+        AddSpotFragment fragment = retrieveFragment();
 
                 if (data != null) {
                     // Get uri of the file
@@ -344,7 +360,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     switch(requestCode){
                         case IMAGE_REQUEST_CODE:
                             try {
-                                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                                bm = MediaStore.Images.Media.getBitmap(getApplicationContext()
+                                        .getContentResolver(), data.getData());
                                 } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -352,7 +369,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             // Get right orientation of the image
                             bm = MultimediaUtilities.rotateBitmap(bm,path);
                             // Resize image
-                            //TODO:decidere se va bene la max size
+                            //TODO: decidere se va bene la max size
                             bm = MultimediaUtilities.resize(bm,180,180);
                             // Set image as preview in fragment
                             fragment.set_preview(bm);
@@ -397,6 +414,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final String [] items = getResources().getStringArray(R.array.categories_names);
         final TypedArray icons = getResources().obtainTypedArray(R.array.categories_icons);
         ListAdapter adapter = new ArrayAdapterWithIcon(this, items,icons);
+        icons.recycle();
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
                 .setAdapter(adapter,new DialogInterface.OnClickListener() {
@@ -406,7 +424,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         String[] categories = getResources().getStringArray(R.array.categories_names);
                         Log.d(TAG,"Category "+ categories[which] + " selected");
                         //Retrieve Fragment
-                        AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
+                        AddSpotFragment fragment = retrieveFragment();
                         fragment.setCategory(categories[which]);
                         dialog.dismiss();
                     }
@@ -418,11 +436,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-        AddSpotFragment fragment = (AddSpotFragment) getSupportFragmentManager().findFragmentById(AddSpotFrag.getId());
+        showProgressDialog();
 
         // Retrieve description, category and content path
-        String description = fragment.getDescription();
-        String category = fragment.getCategory();
+        AddSpotFragment fragment = retrieveFragment();
+        description = fragment.getDescription();
+        category = fragment.getCategory();
+        Log.d(TAG,"Path to media file is"+path);
 
         //Check if there is something missing in the fields
         if(description.isEmpty()) {
@@ -434,36 +454,89 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         if(path.isEmpty()) {
-            Toast.makeText(this, "You have to load a photo, video or audio track.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "You have to load a photo, video or audio track.",
+                    Toast.LENGTH_LONG).show();
             return;
         }
 
         //Retrieve userId
         String userId = AuthUt.getUser().getUid();
 
-        //Save spot multimedia content in the storage
-        StorageUtilities st = new StorageUtilities();
-        String contentURL = st.storeNewFile(path, userId);
+        //Start the task to save spot multimedia content in the storage
+        StorageReference storageRef = FirebaseStorage.getInstance()
+                                        .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
+        Uri file = Uri.fromFile(new File(path));
+        StorageReference childRef = storageRef.child(userId+"/"+file.getLastPathSegment());
+        UploadTask uploadTask = childRef.putFile(file);
+        uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Upload succeeded
+                Log.d(TAG, "Entered in onSuccess");
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                String contentURL = null;
+                if (downloadUrl != null) {
+                    contentURL = downloadUrl.toString();
+                }
+                saveSpotOnDatabase(contentURL);
+                hideProgressDialog();
+                Toast.makeText(MapsActivity.this, "Spot saved correctly",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Upload failed
+                Log.w(TAG, "Entered in onFailure", exception);
+                hideProgressDialog();
+                Toast.makeText(MapsActivity.this, "Error: upload failed",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        //Continues only if the content has been uploaded correctly, otherwise it stops
-        if(contentURL.isEmpty()) {
-            Toast.makeText(this, "Error in uploading the file. Try again later.", Toast.LENGTH_LONG).show();
-        } else {
-            //Retrieve time and date
-            String currentTime = DateFormat.getDateTimeInstance().format(new Date());
+        fragment.setHidden();
+    }
 
-            //Retrieve location info
-            //TODO: vedere se c'è un modo migliore
-            double Lat = mLastLocation.getLatitude();
-            double Lng = mLastLocation.getLongitude();
+    // Function to retrieve the final info to store in the database
+    void saveSpotOnDatabase(String contentURL) {
 
-            //Save spot info in the db
-            DatabaseUtilities db = new DatabaseUtilities();
-            db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+        Log.d(TAG, "Entered in saveSpotonDatabase with contentURL "+contentURL);
+
+        //Retrieve userId
+        String userId = AuthUt.getUser().getUid();
+
+        //Retrieve time and date
+        String currentTime = DateFormat.getDateTimeInstance().format(new Date());
+        Log.d(TAG, "currentTime "+currentTime);
+
+        //Retrieve location info
+        //TODO: vedere se c'è un modo migliore di prendere la location
+        double Lat = mLastLocation.getLatitude();
+        double Lng = mLastLocation.getLongitude();
+
+        //Save spot info in the db
+        //TODO: capire perchè non funziona più
+        DatabaseUtilities db = new DatabaseUtilities();
+        db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+    }
+
+    // Functions to show/hide the progress dialog while dealing with spot storage
+    public void showProgressDialog() {
+        Log.d(TAG, "Entered in showProgressDialog");
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage("Saving...");
         }
 
-        //Dismiss the fragment and return to the main menu
-        fragment.setHidden();
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        Log.d(TAG, "Entered in hideProgressDialog");
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 
 
@@ -472,11 +545,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
 
-            //Calls buildGoogleApiClient() if the fine location permission has been granted, after being requested.
+            //Calls buildGoogleApiClient() if the fine location permission has been granted,
+            // after being requested.
             case LOCATION_PERMISSION_REQUEST_CODE:
                 // If request is cancelled, the result arrays are empty.
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
@@ -502,7 +576,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             case PHOTO_PERMISSION_REQUEST_CODE:
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
-                        Manifest.permission.CAMERA) ||PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        Manifest.permission.CAMERA) ||PermissionUtilities
+                        .isPermissionGranted(permissions, grantResults,
                         Manifest.permission.READ_EXTERNAL_STORAGE) ) {
 
                     // permission was granted
@@ -541,7 +616,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             case MICROPHONE_PERMISSION_REQUEST_CODE:
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,
-                        Manifest.permission.RECORD_AUDIO) || PermissionUtilities.isPermissionGranted(permissions, grantResults,
+                        Manifest.permission.RECORD_AUDIO) || PermissionUtilities
+                        .isPermissionGranted(permissions, grantResults,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                     // permission was granted
