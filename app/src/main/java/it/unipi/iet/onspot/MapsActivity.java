@@ -517,11 +517,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Retrieve location info
         //TODO: vedere se c'è un modo migliore di prendere la location
+        //TODO: se location non è abilitata crasha
         double Lat = mLastLocation.getLatitude();
         double Lng = mLastLocation.getLongitude();
 
         //Save spot info in the db
-        //TODO: capire perchè non funziona più
         DatabaseUtilities db = new DatabaseUtilities();
         db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
     }
