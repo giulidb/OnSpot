@@ -58,6 +58,7 @@
             android:id="@+id/account"
             android:layout_toRightOf="@+id/heart"
             android:text="Profile"
+            android:onClick="toolbarOnClick"
             android:src="@drawable/account"
             style="@style/Widget.AppCompat.ActionButton" />
 

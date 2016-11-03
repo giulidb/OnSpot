@@ -267,6 +267,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.plus:
                 AddSpotFrag = new AddSpotFragment();
                 AddSpotFrag.show(getSupportFragmentManager(), AddSpotFrag.getTag());
+                break;
+            case R.id.account:
+                Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
+                startActivity(i);
 
         }
     }
@@ -414,7 +418,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final String [] items = getResources().getStringArray(R.array.categories_names);
         final TypedArray icons = getResources().obtainTypedArray(R.array.categories_icons);
         ListAdapter adapter = new ArrayAdapterWithIcon(this, items,icons);
-        icons.recycle();
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
                 .setAdapter(adapter,new DialogInterface.OnClickListener() {
@@ -436,7 +439,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-        showProgressDialog();
 
         // Retrieve description, category and content path
         AddSpotFragment fragment = retrieveFragment();
@@ -459,6 +461,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
+        showProgressDialog();
+
         //Retrieve userId
         String userId = AuthUt.getUser().getUid();
 
@@ -466,6 +470,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         StorageReference storageRef = FirebaseStorage.getInstance()
                                         .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
         Uri file = Uri.fromFile(new File(path));
+
+        //// TODO: 03/11/2016 la foto salvata sembrerebbe sporporzionata vista dalla console controllare se quando viene caricata si elimina il problema
         StorageReference childRef = storageRef.child(userId+"/"+file.getLastPathSegment());
         UploadTask uploadTask = childRef.putFile(file);
         uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {

@@ -48,13 +48,13 @@
         <item name="android:textAppearance">@style/TextAppearance.DialogWindowTitle</item>
         <item name="android:topDark">@color/colorPrimary</item>
     </style>
+
     <style name="TextAppearance.DialogWindowTitle" parent="@android:style/TextAppearance.Holo.DialogWindowTitle">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">20px </item>
+        <item name="android:textSize">20px</item>
         <item name="android:textStyle">bold</item>
         <item name="android:padding">12dip</item>
     </style>
-
 
 </resources>

@@ -1,5 +1,6 @@
 package it.unipi.iet.onspot.utilities;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.util.Log;
 
@@ -7,6 +8,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import it.unipi.iet.onspot.myProfileActivity;
 
 /**
  * Firebase Database utilities
@@ -15,10 +19,12 @@ import com.google.firebase.database.FirebaseDatabase;
 public class DatabaseUtilities {
 
     private DatabaseReference mDatabase;
+    private String TAG = "DatabaseUtilities";
 
     public DatabaseUtilities(){
 
         // initialize reference
+        Log.d(TAG,"DB initilized");
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
     }
@@ -38,6 +44,29 @@ public class DatabaseUtilities {
         DatabaseReference newRef = mDatabase.child("spots").push();
         newRef.setValue(new Spot(userId, description, category, contentURL, Lat, Lng, time));
 
+    }
+
+    // Retrieve data from the db
+    public void getUserInfo(String userId, final myProfileActivity activity){
+
+        Log.d(TAG,"Get User Info");
+        DatabaseReference newRef = mDatabase.child("users").child(userId);
+        newRef.addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                User user = dataSnapshot.getValue(User.class);
+                Log.d(TAG,"User: "+ user.firstName);
+                activity.setUserInfo(user);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.d(TAG, "loadUser:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
     }
 
 }
