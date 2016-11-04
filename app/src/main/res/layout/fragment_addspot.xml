@@ -20,8 +20,7 @@
         android:layout_marginTop="6dp"
         android:layout_marginStart="6dp"
         android:layout_alignEnd="@+id/category"
-        android:layout_alignBottom="@+id/audio_add_spot"
-        >
+        android:layout_alignBottom="@+id/audio_add_spot" >
 
         <ImageView
             android:layout_height="wrap_content"
@@ -48,8 +47,7 @@
             android:visibility="invisible"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            style="@style/Widget.AppCompat.ActionButton"
-            />
+            style="@style/Widget.AppCompat.ActionButton" />
 
         <Button
             android:layout_height="wrap_content"
@@ -64,8 +62,7 @@
             android:visibility="invisible"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            style="@style/Widget.AppCompat.ActionButton"
-            />
+            style="@style/Widget.AppCompat.ActionButton" />
 
     </RelativeLayout>
 
@@ -76,10 +73,9 @@
         android:textColor="@android:color/white"
         android:background="@color/colorPrimary"
         android:fontFamily="sans-serif-medium"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:padding="10dp"
-        android:id="@+id/addspot"
-        />
+        android:id="@+id/addspot" />
 
     <EditText
         android:layout_width="300dp"
@@ -104,9 +100,7 @@
         android:layout_below="@+id/category"
         android:layout_alignParentStart="true"
         android:layout_marginTop="6dp"
-        android:onClick="saveSpot"
-        />
-
+        android:onClick="saveSpot" />
 
     <Button
         android:layout_height="wrap_content"
@@ -138,9 +132,6 @@
         android:layout_marginStart="6dp"
         android:layout_marginEnd="6dp"
         android:layout_marginTop="6dp"/>
-
-
-
 
     <Button
         android:layout_height="wrap_content"

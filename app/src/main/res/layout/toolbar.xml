@@ -12,14 +12,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
-        >
+        android:background="@color/colorPrimary" >
 
         <ImageButton
-            android:name="@string/search"
+            android:name="@string/toolbar1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/toolbar1"
+            android:contentDescription="@string/toolbar1"
+            android:onClick="toolbarOnClick"
             android:id="@+id/search_icon"
             android:src="@drawable/magnify"
             style="@style/Widget.AppCompat.ActionButton"/>
@@ -28,17 +29,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/list_spot"
-            android:layout_toRightOf="@+id/search_icon"
+            android:layout_toEndOf="@+id/search_icon"
             android:src="@drawable/list"
-            android:text="List"
+            android:text="@string/toolbar2"
+            android:contentDescription="@string/toolbar2"
             style="@style/Widget.AppCompat.ActionButton"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/plus"
-            android:layout_toRightOf="@+id/list_spot"
-            android:text="Add Spot"
+            android:layout_toEndOf="@+id/list_spot"
+            android:text="@string/toolbar3"
+            android:contentDescription="@string/toolbar3"
             android:onClick="toolbarOnClick"
             android:src="@drawable/plus"
             style="@style/Widget.AppCompat.ActionButton"/>
@@ -47,8 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/heart"
-            android:layout_toRightOf="@+id/plus"
-            android:text="Liked"
+            android:layout_toEndOf="@+id/plus"
+            android:text="@string/toolbar4"
+            android:contentDescription="@string/toolbar4"
             android:src="@drawable/heart"
             style="@style/Widget.AppCompat.ActionButton"/>
 
@@ -56,15 +60,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/account"
-            android:layout_toRightOf="@+id/heart"
-            android:text="Profile"
+            android:layout_toEndOf="@+id/heart"
+            android:text="@string/toolbar5"
+            android:contentDescription="@string/toolbar5"
             android:onClick="toolbarOnClick"
             android:src="@drawable/account"
             style="@style/Widget.AppCompat.ActionButton" />
 
     </RelativeLayout>
-
-
-
 
 </android.support.v7.widget.Toolbar>

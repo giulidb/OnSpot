@@ -18,11 +18,11 @@
 
     <!-- Strings for MapsActivity -->
     <string name="title_activity_maps">Map</string>
-    <string name="search">Search</string>
-    <string name="add_spot">Add Spot</string>
-    <string name="profile">Profile</string>
-    <string name="liked">Liked</string>
-    <string name="list">List</string>
+    <string name="toolbar1">Search</string>
+    <string name="toolbar2">List</string>
+    <string name="toolbar3">Add Spot</string>
+    <string name="toolbar5">Profile</string>
+    <string name="toolbar4">Liked</string>
 
     <!-- Strings for ProfileActivity -->
     <string name="title_activity_profile">Join us</string>
@@ -39,9 +39,16 @@
     <string name="permission_required_toast">Location permission is required for this demo.</string>
 
     <!-- String for Add Spot Fragment -->
+    <string name="add_spot">Add Spot</string>
     <string name="description">Description</string>
     <string name="category">Category</string>
     <string name="save">Save</string>
 
+    <!-- String for Search Fragment -->
+    <string name="search_button">Search</string>
+    <string name="search_hint">Search Location Here</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

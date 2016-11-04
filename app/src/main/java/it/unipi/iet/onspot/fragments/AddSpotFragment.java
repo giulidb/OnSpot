@@ -1,4 +1,4 @@
-package it.unipi.iet.onspot;
+package it.unipi.iet.onspot.fragments;
 
 import android.app.Dialog;
 import android.graphics.Bitmap;
@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import it.unipi.iet.onspot.R;
 
 /**
  *  BottomSheetDialogFragment to display in the bottom sheet when a user want to
@@ -96,10 +98,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     }
 
     public void setCategory(String cat) { category.setText(cat); }
-
-    public void setHidden() {
-        ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_HIDDEN);
-    }
 
 
     /*

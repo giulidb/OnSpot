@@ -1,12 +1,13 @@
 package it.unipi.iet.onspot;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -17,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +37,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -47,7 +48,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.text.DateFormat;
+import java.util.List;
 
+import it.unipi.iet.onspot.fragments.AddSpotFragment;
+import it.unipi.iet.onspot.fragments.SearchFragment;
 import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
@@ -84,6 +88,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     private String description;
     private String category;
     private String path;
+
+    //Search variables
+    private SearchFragment SearchFrag;
 
     String TAG = "MapsActivity";
 
@@ -270,7 +277,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             case R.id.account:
                 Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
                 startActivity(i);
-
+            case R.id.search_icon:
+                SearchFrag = new SearchFragment();
+                SearchFrag.show(getSupportFragmentManager(), SearchFrag.getTag());
+                break;
         }
     }
 
@@ -487,7 +497,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             }
         });
 
-        fragment.setHidden();
+        fragment.dismiss();
     }
 
     //Check if there is something missing in the fields
@@ -530,6 +540,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         //Save spot info in the db
         DatabaseUtilities db = new DatabaseUtilities();
         db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+    }
+
+
+    /*
+     * Search functions
+     */
+
+    // Function called when the user presses Search
+    public void onMapSearch(View view) {
+        // Retrieve description and category
+        SearchFragment fragment = (SearchFragment) getSupportFragmentManager()
+                .findFragmentById(SearchFrag.getId());
+        String location = fragment.getLocation();
+        List<Address> addressList = null;
+
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            addressList = geocoder.getFromLocationName(location, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(addressList!=null) {
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mGoogleMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        } else {
+            Toast.makeText(this, "Invalid location", Toast.LENGTH_SHORT).show();
+        }
+        fragment.dismiss();
     }
 
 
