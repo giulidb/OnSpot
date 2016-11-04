@@ -55,7 +55,7 @@ import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                                                                 ConnectionCallbacks,
                                                                 OnConnectionFailedListener,
                                                                 LocationListener {
@@ -84,7 +84,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String description;
     private String category;
     private String path;
-    private ProgressDialog mProgressDialog;
 
     String TAG = "MapsActivity";
 
@@ -418,6 +417,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final String [] items = getResources().getStringArray(R.array.categories_names);
         final TypedArray icons = getResources().obtainTypedArray(R.array.categories_icons);
         ListAdapter adapter = new ArrayAdapterWithIcon(this, items,icons);
+        icons.recycle();
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
                 .setAdapter(adapter,new DialogInterface.OnClickListener() {
@@ -439,27 +439,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-
-        // Retrieve description, category and content path
+        // Retrieve description and category
         AddSpotFragment fragment = retrieveFragment();
         description = fragment.getDescription();
         category = fragment.getCategory();
         Log.d(TAG,"Path to media file is"+path);
 
         //Check if there is something missing in the fields
-        if(description.isEmpty()) {
-            Toast.makeText(this, "Description field cannot be empty.", Toast.LENGTH_LONG).show();
+        if(!formIsValid())
             return;
-        }
-        if(category.isEmpty()) {
-            Toast.makeText(this, "Category field cannot be empty.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if(path.isEmpty()) {
-            Toast.makeText(this, "You have to load a photo, video or audio track.",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
 
         showProgressDialog();
 
@@ -503,6 +491,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         fragment.setHidden();
     }
 
+    //Check if there is something missing in the fields
+    boolean formIsValid() {
+
+        if(description.isEmpty()) {
+            Toast.makeText(this, "Description field cannot be empty.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if(category.isEmpty()) {
+            Toast.makeText(this, "Category field cannot be empty.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if(path.isEmpty()) {
+            Toast.makeText(this, "You have to load a photo, video or audio track.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
     // Function to retrieve the final info to store in the database
     void saveSpotOnDatabase(String contentURL) {
 
@@ -526,30 +533,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
     }
 
-    // Functions to show/hide the progress dialog while dealing with spot storage
-    public void showProgressDialog() {
-        Log.d(TAG, "Entered in showProgressDialog");
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setMessage("Saving...");
-        }
-
-        mProgressDialog.show();
-    }
-
-    public void hideProgressDialog() {
-        Log.d(TAG, "Entered in hideProgressDialog");
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
-
 
     /*
      * Functions for permission handling.
      */
 
+    //TODO: controllare se effettivamente funziona tutta 'sta roba
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
