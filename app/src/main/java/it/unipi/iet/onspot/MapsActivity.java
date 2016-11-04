@@ -417,7 +417,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         final String [] items = getResources().getStringArray(R.array.categories_names);
         final TypedArray icons = getResources().obtainTypedArray(R.array.categories_icons);
         ListAdapter adapter = new ArrayAdapterWithIcon(this, items,icons);
-        icons.recycle();
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this,R.style.AppDialog);
         builder.setTitle("Choose a category")
                 .setAdapter(adapter,new DialogInterface.OnClickListener() {

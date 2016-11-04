@@ -21,6 +21,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- to access Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />

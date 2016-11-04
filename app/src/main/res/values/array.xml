@@ -6,23 +6,27 @@
     </string-array>
 
     <string-array name="categories_names">
+        <item>Art&amp;Entertainment</item>
         <item>Dining Out</item>
+        <item>Events&amp;Festivals</item>
         <item>Food</item>
-        <item>Landscape</item>
+        <item>Landscapes</item>
         <item>Live Music</item>
         <item>Shopping</item>
         <item>Sports</item>
-        <item>Art</item>
+        <item>Street Art</item>
     </string-array>
 
     <string-array name="categories_icons">
+        <item>@drawable/palette</item>
         <item>@drawable/martini</item>
+        <item>@drawable/calendar</item>
         <item>@drawable/food</item>
         <item>@drawable/mountain</item>
         <item>@drawable/guitar</item>
         <item>@drawable/shopping</item>
         <item>@drawable/soccer</item>
-        <item>@drawable/palette</item>
+        <item>@drawable/spray</item>
     </string-array>
 
 </resources>

@@ -66,6 +66,21 @@
 
 </RelativeLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="left"
+        android:layout_below="@+id/relativeLayout"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/spot_container">
+        </LinearLayout>
+
+        </ScrollView>
+
 
 
 </RelativeLayout>

@@ -2,13 +2,22 @@ package it.unipi.iet.onspot.utilities;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import it.unipi.iet.onspot.myProfileActivity;
 
@@ -47,10 +56,10 @@ public class DatabaseUtilities {
     }
 
     // Retrieve data from the db
-    public void getUserInfo(String userId, final myProfileActivity activity){
+    public void loadProfile(String userId, final myProfileActivity activity){
 
         Log.d(TAG,"Get User Info");
-        DatabaseReference newRef = mDatabase.child("users").child(userId);
+        final DatabaseReference newRef = mDatabase.child("users").child(userId);
         newRef.addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -67,6 +76,35 @@ public class DatabaseUtilities {
                 // ...
             }
         });
+
+
+        final DatabaseReference spotRef = mDatabase.child("spots");
+        spotRef.orderByChild("userId").equalTo(userId).addChildEventListener(new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Spot spot = dataSnapshot.getValue(Spot.class);
+                Log.d(TAG,dataSnapshot.getKey() + " userid: "+spot.userId + "time: "+ spot.time + " .");
+                activity.setUserSpot(spot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+
+        });
+
     }
+
+
 
 }

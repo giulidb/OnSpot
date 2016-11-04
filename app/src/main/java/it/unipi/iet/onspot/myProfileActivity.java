@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.Calendar;
-import java.util.Date;
+
 
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
+import it.unipi.iet.onspot.utilities.DownloadTask;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
+import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.User;
 
 public class myProfileActivity extends AppCompatActivity {
@@ -40,7 +41,7 @@ public class myProfileActivity extends AppCompatActivity {
 
         // Retrieve User info from FIREBASE DATABASE
         DatabaseUtilities db = new DatabaseUtilities();
-        db.getUserInfo(AuthUt.getUser().getUid(),this);
+        db.loadProfile(AuthUt.getUser().getUid(),this);
     }
 
     public void setUserInfo(User user){
@@ -58,8 +59,18 @@ public class myProfileActivity extends AppCompatActivity {
         Age.setText("Age: "+age);
 
 
-
     }
+
+    public void setUserSpot(final Spot spot){
+
+        Log.d(TAG, "setUserSpot");
+        ImageView image = new ImageView(this);
+        image.setPadding(0,16,0,16);
+        DownloadTask download=new DownloadTask(this,image);
+        download.execute(spot.contentURL);
+    }
+
+
 
     @Override
     public void onStart() {
