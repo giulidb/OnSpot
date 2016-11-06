@@ -13,9 +13,8 @@ public class LikedImagesFragment extends ImageListFragment {
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
         Log.d("ImageListFragment","Query for favourite images");
-        Query recentUploadsQuery = databaseReference.child("spots")
-                .limitToFirst(40);
+        Query favQuery = databaseReference.child("spots");
 
-        return recentUploadsQuery ;
+        return favQuery ;
     }
 }

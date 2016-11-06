@@ -14,7 +14,7 @@ public class MyImagesFragment extends ImageListFragment {
         // My top spots
         Log.d("ImageListFragment","Query for my images");
         String myUserId = getUid();
-        Query myPostsQuery = databaseReference.child("spots").child("userId").equalTo(myUserId);
+        Query myPostsQuery = databaseReference.child("spots").orderByChild("userId").equalTo(myUserId);
 
         return myPostsQuery;
     }

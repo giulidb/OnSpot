@@ -14,21 +14,105 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:id="@+id/title_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:background="@color/colorAccent" >
+
+            <ImageView
+                android:id="@+id/image_category"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="6dip" />
+
+            <TextView
+                android:id="@+id/text_category"
+                android:layout_width="fill_parent"
+                android:layout_height="26dip"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/image_category"
+                android:padding="10dp"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/headline"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/image_category"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:padding="10dp"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            android:layout_below="@id/title_layout"/>
 
         <TextView
-            android:id="@+id/nickname"
+            android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/image"
             android:padding="10dp"
             android:gravity="center"
             android:textSize="12sp" />
+
+        <RelativeLayout
+            android:id="@+id/bottom_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_below="@id/description">
+
+            <ImageView
+                android:id="@+id/image_user"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="6dip" />
+
+            <TextView
+                android:id="@+id/text_user"
+                android:layout_width="wrap_content"
+                android:layout_height="26dip"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/image_user"
+                android:padding="10dp"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/heart_image"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="6dip"
+                android:layout_alignParentRight="true"/>
+
+            <TextView
+                android:id="@+id/heart_number"
+                android:layout_width="wrap_content"
+                android:layout_height="26dip"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_toLeftOf="@id/heart_image"
+                android:padding="10dp"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
