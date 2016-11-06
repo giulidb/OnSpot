@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:background="#E9E9E9"
+    android:theme="@style/AppTheme"
+    tools:context=".MapsActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Spot"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:id="@+id/spot" />
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:contentDescription="@string/image"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/rectplus"
+        android:id="@+id/content"
+        android:layout_below="@+id/spot"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="28dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/clock"
+        android:id="@+id/date"
+        android:padding="4dp"
+        android:text="  date"
+        android:layout_alignTop="@+id/content"
+        android:layout_toEndOf="@+id/user_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/content"
+        android:drawableStart="@drawable/folder"
+        android:layout_below="@id/date"
+        android:id="@+id/category"
+        android:padding="4dp"
+        android:text="@string/category"
+        android:layout_alignStart="@id/date"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/content"
+        android:drawableStart="@drawable/quote"
+        android:id="@+id/description"
+        android:padding="4dp"
+        android:text="@string/description"
+        android:layout_alignStart="@id/date"
+        android:layout_below="@+id/category" />
+
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:contentDescription="@string/image"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/account"
+        android:id="@+id/user_photo"
+        android:layout_alignStart="@id/content"
+        android:layout_below="@id/description"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/user_photo"
+        android:layout_alignTop="@id/user_photo"
+        android:id="@+id/user_name"
+        android:padding="16dp"
+        android:text="user_name"
+        />
+
+
+
+
+
+
+</RelativeLayout>

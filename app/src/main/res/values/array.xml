@@ -29,4 +29,16 @@
         <item>@drawable/spray</item>
     </string-array>
 
+    <string-array name="categories_markers">
+        <item>@drawable/museum_paintings</item>
+        <item>@drawable/bar_coktail</item>
+        <item>@drawable/festival</item>
+        <item>@drawable/burger</item>
+        <item>@drawable/mountains</item>
+        <item>@drawable/music_live</item>
+        <item>@drawable/bags</item>
+        <item>@drawable/soccer2</item>
+        <item>@drawable/publicart</item>
+    </string-array>
+
 </resources>

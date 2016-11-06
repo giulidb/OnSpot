@@ -1,6 +1,7 @@
 package it.unipi.iet.onspot;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,37 +40,56 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.unipi.iet.onspot.fragments.AddSpotFragment;
 import it.unipi.iet.onspot.fragments.SearchFragment;
+import it.unipi.iet.onspot.fragments.VisualizeSpot;
 import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
+import it.unipi.iet.onspot.utilities.Spot;
+import it.unipi.iet.onspot.utilities.User;
 
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                                                                 ConnectionCallbacks,
                                                                 OnConnectionFailedListener,
-                                                                LocationListener {
+                                                                LocationListener,
+                                                                GoogleMap.OnMarkerClickListener
+                                                                                {
 
     // GoogleMaps variables
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+
+
 
     // Firebase variables
     private AuthUtilities AuthUt;
@@ -83,11 +105,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     final int VIDEO_REQUEST_CODE = 2;
     final int AUDIO_REQUEST_CODE = 3;
 
+
     // Add Spot variables
     private BottomSheetDialogFragment AddSpotFrag;
     private String description;
     private String category;
     private String path;
+    private String type;
 
     //Search variables
     private SearchFragment SearchFrag;
@@ -169,8 +193,41 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     //Manipulates the map once available.
     @Override
-    public void onMapReady(GoogleMap googleMap)
+    public void onMapReady(final GoogleMap googleMap)
     {
+
+        /* Loading Markers from Firebase Database */
+        final DatabaseReference newRef = FirebaseDatabase.getInstance().getReference().child("spots");
+        newRef.addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                    Spot spot = child.getValue(Spot.class);
+                    Log.d(TAG, "Spot: " + spot.description);
+                    Integer id = getIconId(spot.category);
+                    Marker myMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(spot.Lat, spot.Lng))
+                        .title(spot.description)
+                        .icon(BitmapDescriptorFactory.fromResource(id)));
+
+                    // Associate spot with the marker
+                    myMarker.setTag(spot);
+
+                // set Markers clickable
+                googleMap.setOnMarkerClickListener(MapsActivity.this);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.d(TAG, "loadUser:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
+
+
         mGoogleMap=googleMap;
 
         //Initialize Google Play Services
@@ -186,6 +243,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             buildGoogleApiClient();
             mGoogleMap.setMyLocationEnabled(true);
         }
+
+
+
     }
 
     //Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
@@ -234,10 +294,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+
         //stop location updates
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
+
+
     }
 
 
@@ -277,6 +340,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             case R.id.account:
                 Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
                 startActivity(i);
+                break;
             case R.id.search_icon:
                 SearchFrag = new SearchFragment();
                 SearchFrag.show(getSupportFragmentManager(), SearchFrag.getTag());
@@ -384,11 +448,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                             // Resize image
                             //TODO: decidere se va bene la max size
                             bm = MultimediaUtilities.resize(bm,180,180);
+                            //save file type
+                            type = "image";
                             // Set image as preview in fragment
                             fragment.set_preview(bm);
                             break;
 
                         case AUDIO_REQUEST_CODE:
+                            //save file type
+                            type = "audio";
                             fragment.add_audio_button();
                             break;
 
@@ -400,6 +468,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                             mRetriever.setDataSource(path);
                             bm = (mRetriever.getFrameAtTime(0));
                             bm = MultimediaUtilities.resize(bm,180,180);
+                            //save file type
+                            type = "video";
                             // Set image as preview in fragment
                             fragment.set_preview(bm);
                             // Add play button to reproduce video if clicked
@@ -449,7 +519,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     public void saveSpot(View view) {
 
         // Retrieve description and category
-        AddSpotFragment fragment = retrieveFragment();
+        final AddSpotFragment fragment = retrieveFragment();
         description = fragment.getDescription();
         category = fragment.getCategory();
         Log.d(TAG,"Path to media file is"+path);
@@ -468,8 +538,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                                         .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
         Uri file = Uri.fromFile(new File(path));
 
-        //// TODO: 03/11/2016 la foto salvata sembrerebbe sporporzionata vista dalla console controllare se quando viene caricata si elimina il problema
         StorageReference childRef = storageRef.child(userId+"/"+file.getLastPathSegment());
+        Log.d(TAG,"File Storage Reference: "+ childRef.getPath());
         UploadTask uploadTask = childRef.putFile(file);
         uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -483,6 +553,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 }
                 saveSpotOnDatabase(contentURL);
                 hideProgressDialog();
+                fragment.dismiss();
+
                 Toast.makeText(MapsActivity.this, "Spot saved correctly",
                         Toast.LENGTH_SHORT).show();
             }
@@ -497,7 +569,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             }
         });
 
-        fragment.dismiss();
+        // Observe state change events such as progress, pause, and resume
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d(TAG,"Upload is " + progress + "% done");
+                setmProgressDialog((int)progress);
+            }
+        }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG,"Upload is paused");
+            }
+        });
+
+
     }
 
     //Check if there is something missing in the fields
@@ -534,12 +621,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         //Retrieve location info
         //TODO: vedere se c'è un modo migliore di prendere la location
         //TODO: se location non è abilitata crasha
-        double Lat = mLastLocation.getLatitude();
-        double Lng = mLastLocation.getLongitude();
 
-        //Save spot info in the db
-        DatabaseUtilities db = new DatabaseUtilities();
-        db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime);
+            double Lat = mLastLocation.getLatitude();
+            double Lng = mLastLocation.getLongitude();
+            //Save spot info in the db
+            DatabaseUtilities db = new DatabaseUtilities();
+            db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime,type);
+
+
     }
 
 
@@ -571,6 +660,26 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
         fragment.dismiss();
     }
+
+     /* Function to menage clicks on markers */
+     @Override
+      public boolean onMarkerClick(final Marker marker){
+
+         // Retrieve the data from the marker.
+         Spot clickSpot = (Spot) marker.getTag();
+         Log.d(TAG, "Marker Clicked: "+ clickSpot.description);
+
+         VisualizeSpot VisualizeSpotFrag = new VisualizeSpot();
+         VisualizeSpotFrag.setSpot(clickSpot);
+         VisualizeSpotFrag.show(getSupportFragmentManager(), VisualizeSpotFrag.getTag());
+
+
+         // Return false to indicate that we have not consumed the event and that we wish
+         // for the default behavior to occur (which is for the camera to move such that the
+         // marker is centered and for the marker's info window to open, if it has one).
+         return false;
+
+     }
 
 
     /*
@@ -672,6 +781,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
         }
     }
+
+      /* Function that returnd marker drawable id for spot category */
+      public Integer getIconId(String category){
+          final String [] items = getResources().getStringArray(R.array.categories_names);
+          int index = Arrays.asList(items).indexOf(category);
+          TypedArray marker =  getResources().obtainTypedArray(R.array.categories_markers);
+          Log.d(TAG,"id: "+index);
+          return marker.getResourceId(index,-1);
+
+      }
 
 }
 

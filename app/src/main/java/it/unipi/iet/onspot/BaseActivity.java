@@ -14,6 +14,9 @@ public class BaseActivity extends AppCompatActivity {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCancelable(false);
             mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setProgress(0);
+
         }
 
         mProgressDialog.show();
@@ -23,6 +26,12 @@ public class BaseActivity extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    public void setmProgressDialog(int progress){
+        mProgressDialog.setProgress(progress);
+
+
     }
 
     public String getUid() {

@@ -8,10 +8,10 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_up">Sign up with mail</string>
-    <string name="action_facebook">Connect with Facebook</string>
-    <string name="action_guest">Browse as a guest</string>
+    <string name="action_sign_in"> Sign in</string>
+    <string name="action_sign_up"> Sign up with mail</string>
+    <string name="action_facebook"> Connect with Facebook</string>
+    <string name="action_guest"> Browse as a guest</string>
     <string name="auth_failed">Authentication failed</string>
     <string name="create_user_failed">Creation user failed</string>
     <string name="title_activity_login">Sign in</string>
