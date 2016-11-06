@@ -1,0 +1,27 @@
+package it.unipi.iet.onspot.utilities;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
+/**
+ * Class that Implement ClusterItem to represent a marker on the map.
+ * The cluster item returns the position of the marker as a LatLng object.
+ */
+
+public class MarkerItem implements ClusterItem {
+    public final LatLng mPosition;
+    public final Integer icon_id;
+    public final Spot spot;
+
+    public MarkerItem(int icon_id,Spot spot) {
+        mPosition = new LatLng(spot.Lat, spot.Lng);
+        this.icon_id = icon_id;
+        this.spot = spot;
+
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return mPosition;
+    }
+}

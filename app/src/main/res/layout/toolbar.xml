@@ -33,6 +33,7 @@
             android:src="@drawable/list"
             android:text="@string/toolbar2"
             android:contentDescription="@string/toolbar2"
+            android:onClick="toolbarOnClick"
             style="@style/Widget.AppCompat.ActionButton"/>
 
         <ImageButton

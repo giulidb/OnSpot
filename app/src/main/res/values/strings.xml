@@ -48,6 +48,12 @@
     <string name="search_button">Search</string>
     <string name="search_hint">Search Location Here</string>
 
+    <!-- String for Spot Fragment -->
+    <string name="spot">Spot</string>
+
+    <!-- String for List Spots Fragment -->
+    <string name="visible_spot">Visible Spots</string>
+
     <!-- String for MyProfileActivity -->
     <string name="heading_liked">Favourites</string>
     <string name="heading_my_images">My Spots</string>

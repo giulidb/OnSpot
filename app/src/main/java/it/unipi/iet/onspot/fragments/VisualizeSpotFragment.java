@@ -29,10 +29,10 @@ import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.User;
 
 /**
- * Created by Giulia on 05/11/2016.
+ *  Fragment that shows single spots information when users click on markers
  */
 
-public class VisualizeSpot extends BottomSheetDialogFragment {
+public class VisualizeSpotFragment extends BottomSheetDialogFragment {
 
     private CoordinatorLayout.Behavior behavior;
     private Spot spot;
@@ -102,6 +102,8 @@ public class VisualizeSpot extends BottomSheetDialogFragment {
                 Log.d(TAG,"User: "+ user.firstName);
                 user_name = (TextView)view.findViewById(R.id.user_name);
                 user_name.setText(user.firstName+" "+user.lastName);
+                //TODO: Recuperare immagine dallo storage
+
 
             }
             @Override
