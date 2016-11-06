@@ -1,16 +1,15 @@
 package it.unipi.iet.onspot;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,11 +39,10 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,39 +53,42 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import it.unipi.iet.onspot.fragments.AddSpotFragment;
+import it.unipi.iet.onspot.fragments.ListSpotFragment;
 import it.unipi.iet.onspot.fragments.SearchFragment;
-import it.unipi.iet.onspot.fragments.VisualizeSpot;
+import it.unipi.iet.onspot.fragments.VisualizeSpotFragment;
 import it.unipi.iet.onspot.utilities.ArrayAdapterWithIcon;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
+import it.unipi.iet.onspot.utilities.MarkerItem;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 import it.unipi.iet.onspot.utilities.Spot;
-import it.unipi.iet.onspot.utilities.User;
 
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                                                                 ConnectionCallbacks,
                                                                 OnConnectionFailedListener,
                                                                 LocationListener,
-                                                                GoogleMap.OnMarkerClickListener
-                                                                                {
+                                                                ClusterManager.OnClusterItemClickListener<MarkerItem>{
 
     // GoogleMaps variables
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private LatLngBounds mLatLngBounds;
+    private ClusterManager<MarkerItem> mClusterManager;
 
 
 
@@ -196,6 +197,19 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     public void onMapReady(final GoogleMap googleMap)
     {
 
+        mGoogleMap=googleMap;
+
+        // Initialize the Cluster marker manager with the context and the map.
+        mClusterManager = new ClusterManager<>(this, mGoogleMap);
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mGoogleMap.setOnCameraIdleListener(mClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mClusterManager);
+        mClusterManager.setOnClusterItemClickListener(this);
+        //set ClusterRendered for marker icon and cluster color
+        mClusterManager.setRenderer(new MarkerRenderer());
+
+
         /* Loading Markers from Firebase Database */
         final DatabaseReference newRef = FirebaseDatabase.getInstance().getReference().child("spots");
         newRef.addValueEventListener( new ValueEventListener() {
@@ -205,18 +219,17 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
                     Spot spot = child.getValue(Spot.class);
                     Log.d(TAG, "Spot: " + spot.description);
+                    // get category icon id
                     Integer id = getIconId(spot.category);
-                    Marker myMarker = googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(spot.Lat, spot.Lng))
-                        .title(spot.description)
-                        .icon(BitmapDescriptorFactory.fromResource(id)));
+                    // Marker creation
+                    MarkerItem offsetItem = new MarkerItem(id,spot);
+                    // Add marker to Cluster Manager
+                    mClusterManager.addItem(offsetItem);
 
-                    // Associate spot with the marker
-                    myMarker.setTag(spot);
-
-                // set Markers clickable
-                googleMap.setOnMarkerClickListener(MapsActivity.this);
                 }
+
+                mClusterManager.cluster();
+
             }
 
             @Override
@@ -227,8 +240,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             }
         });
 
-
-        mGoogleMap=googleMap;
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -243,6 +254,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             buildGoogleApiClient();
             mGoogleMap.setMyLocationEnabled(true);
         }
+
+        /* Set mGooleMap on CameraMoveListener to get current visible region */
+        mGoogleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                /* Initialization of coordinates of the projection of the viewing part map in the current state
+        need for list of visible fragments */
+                mLatLngBounds = mGoogleMap.getProjection().getVisibleRegion().latLngBounds;
+            }
+        });
 
 
 
@@ -300,7 +321,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
-
     }
 
 
@@ -333,6 +353,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     public void toolbarOnClick(View view){
 
         switch(view.getId()){
+            case R.id.search_icon:
+                SearchFrag = new SearchFragment();
+                SearchFrag.show(getSupportFragmentManager(), SearchFrag.getTag());
+                break;
+            case R.id.list_spot:
+                ListSpotFragment ListFrag = new ListSpotFragment();
+                ListFrag.setLatLng(mLatLngBounds);
+                ListFrag.show(getSupportFragmentManager(), ListFrag.getTag());
+                break;
             case R.id.plus:
                 AddSpotFrag = new AddSpotFragment();
                 AddSpotFrag.show(getSupportFragmentManager(), AddSpotFrag.getTag());
@@ -341,10 +370,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
                 startActivity(i);
                 break;
-            case R.id.search_icon:
-                SearchFrag = new SearchFragment();
-                SearchFrag.show(getSupportFragmentManager(), SearchFrag.getTag());
-                break;
+
         }
     }
 
@@ -661,25 +687,67 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         fragment.dismiss();
     }
 
-     /* Function to menage clicks on markers */
-     @Override
-      public boolean onMarkerClick(final Marker marker){
-
-         // Retrieve the data from the marker.
-         Spot clickSpot = (Spot) marker.getTag();
-         Log.d(TAG, "Marker Clicked: "+ clickSpot.description);
-
-         VisualizeSpot VisualizeSpotFrag = new VisualizeSpot();
-         VisualizeSpotFrag.setSpot(clickSpot);
-         VisualizeSpotFrag.show(getSupportFragmentManager(), VisualizeSpotFrag.getTag());
+      /*
+     *  Markers functions
+     */
 
 
-         // Return false to indicate that we have not consumed the event and that we wish
-         // for the default behavior to occur (which is for the camera to move such that the
-         // marker is centered and for the marker's info window to open, if it has one).
-         return false;
+     // Function that returnd marker drawable id for spot category
+      public Integer getIconId(String category){
+          final String [] items = getResources().getStringArray(R.array.categories_names);
+          int index = Arrays.asList(items).indexOf(category);
+          TypedArray marker =  getResources().obtainTypedArray(R.array.categories_markers);
+          Log.d(TAG,"id: "+index);
+          return marker.getResourceId(index,-1);
 
-     }
+      }
+
+    /**
+     * Draws category icons inside markers.
+     * Customize color clusters
+     */
+
+    public class MarkerRenderer  extends DefaultClusterRenderer<MarkerItem> {
+
+        public MarkerRenderer() {
+            super(getApplicationContext(), mGoogleMap, mClusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(MarkerItem item, MarkerOptions markerOptions) {
+            // Draw a single marker.
+            // Set the info window to show their name.
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(item.icon_id)).title(item.spot.description);
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Render clusters for more than 2 markers
+            return cluster.getSize() > 2;
+        }
+
+        // Customize Cluster Color with primary Color of the app
+        @Override
+        protected int getColor(int clusterSize) {
+            return Color.parseColor("#C45852");
+        }
+    }
+
+    // Function to menage clicks on markers
+
+    @Override
+    public boolean onClusterItemClick(MarkerItem item) {
+        // Does nothing, but you could go into the user's profile page, for example.
+        // Retrieve the data from the marker.
+        Log.d(TAG, "onClusterItemClick Marker Clicked: "+ item.spot.description);
+
+        VisualizeSpotFragment VisualizeSpotFrag = new VisualizeSpotFragment();
+        VisualizeSpotFrag.setSpot(item.spot);
+        VisualizeSpotFrag.show(getSupportFragmentManager(), VisualizeSpotFrag.getTag());
+        return false;
+    }
+
+
 
 
     /*
@@ -782,15 +850,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
     }
 
-      /* Function that returnd marker drawable id for spot category */
-      public Integer getIconId(String category){
-          final String [] items = getResources().getStringArray(R.array.categories_names);
-          int index = Arrays.asList(items).indexOf(category);
-          TypedArray marker =  getResources().obtainTypedArray(R.array.categories_markers);
-          Log.d(TAG,"id: "+index);
-          return marker.getResourceId(index,-1);
 
-      }
+
 
 }
+
+
+
 
