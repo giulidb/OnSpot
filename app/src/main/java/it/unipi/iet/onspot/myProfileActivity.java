@@ -2,6 +2,11 @@ package it.unipi.iet.onspot;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,17 +14,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Calendar;
 
-
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
-import it.unipi.iet.onspot.utilities.DownloadTask;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
-import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.User;
+
+import it.unipi.iet.onspot.fragments.LikedImagesFragment;
+import it.unipi.iet.onspot.fragments.MyImagesFragment;
+
+
 
 public class myProfileActivity extends AppCompatActivity {
 
     private AuthUtilities AuthUt;
+
+    private PagerAdapter mPagerAdapter;
+    private ViewPager mViewPager;
+
     private String TAG = "myProfileActivity";
 
 
@@ -34,6 +45,7 @@ public class myProfileActivity extends AppCompatActivity {
 
         // Retrieve Profile Photo by FIREBASE_USER
         //// TODO: 03/11/2016 Se vogliamo che anche altri utenti vedano la foto usare Storage per salvare e recuperare
+        //TODO: fare in modo che non crashi se non c'è l'immagine
         Bitmap bm = BitmapFactory.decodeFile(MultimediaUtilities.getRealPathFromURI(this,AuthUt.getPhoto_url()));
         bm = MultimediaUtilities.rotateBitmap(bm,MultimediaUtilities.getRealPathFromURI(this,AuthUt.getPhoto_url()));
         bm = MultimediaUtilities.getRoundedCroppedBitmap(bm, 200);
@@ -42,6 +54,34 @@ public class myProfileActivity extends AppCompatActivity {
         // Retrieve User info from FIREBASE DATABASE
         DatabaseUtilities db = new DatabaseUtilities();
         db.loadProfile(AuthUt.getUser().getUid(),this);
+        Log.d(TAG, "Profile loaded");
+
+        // Create the adapter that will return a fragment for each section
+        mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            private final Fragment[] mFragments = new Fragment[] {
+                    new LikedImagesFragment(),
+                    new MyImagesFragment()
+            };
+            private final String[] mFragmentNames = new String[] {
+                    getString(R.string.heading_liked),
+                    getString(R.string.heading_my_images)
+            };
+            @Override
+            public Fragment getItem(int position) { return mFragments[position]; }
+            @Override
+            public int getCount() { return mFragments.length; }
+            @Override
+            public CharSequence getPageTitle(int position) { return mFragmentNames[position]; }
+        };
+        Log.d(TAG, "PagerAdapter created");
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mPagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        Log.d(TAG, "ViewPager created");
+
     }
 
     public void setUserInfo(User user){
@@ -58,19 +98,7 @@ public class myProfileActivity extends AppCompatActivity {
         int age = today.get(Calendar.YEAR) - year ;
         Age.setText("Age: "+age);
 
-
     }
-
-    public void setUserSpot(final Spot spot){
-
-        Log.d(TAG, "setUserSpot");
-        ImageView image = new ImageView(this);
-        image.setPadding(0,16,0,16);
-        DownloadTask download=new DownloadTask(this,image);
-        download.execute(spot.contentURL);
-    }
-
-
 
     @Override
     public void onStart() {
@@ -83,4 +111,5 @@ public class myProfileActivity extends AppCompatActivity {
         super.onStop();
         AuthUt.removeListener();
     }
+
 }

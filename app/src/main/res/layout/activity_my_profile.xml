@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="it.unipi.iet.onspot.myProfileActivity">
 
-<RelativeLayout
+    <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -64,23 +64,30 @@
         android:layout_below="@+id/age"
         android:layout_alignStart="@+id/age" />
 
-</RelativeLayout>
+    </RelativeLayout>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:foregroundGravity="left"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:layout_below="@+id/relativeLayout"
-        >
-        <LinearLayout
+        android:id="@+id/relativeLayout2">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/spot_container">
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
-        </ScrollView>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tabs" />
 
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -48,10 +48,10 @@ public class DatabaseUtilities {
 
     // Insert a new spot in the db
     public void writeNewSpot(String userId, String description, String category, String contentURL,
-                             double Lat, double Lng, String time) {
+                             double Lat, double Lng, String time, String type) {
 
         DatabaseReference newRef = mDatabase.child("spots").push();
-        newRef.setValue(new Spot(userId, description, category, contentURL, Lat, Lng, time));
+        newRef.setValue(new Spot(userId, description, category, contentURL, Lat, Lng, time, type));
 
     }
 
@@ -75,32 +75,6 @@ public class DatabaseUtilities {
                 Log.d(TAG, "loadUser:onCancelled", databaseError.toException());
                 // ...
             }
-        });
-
-
-        final DatabaseReference spotRef = mDatabase.child("spots");
-        spotRef.orderByChild("userId").equalTo(userId).addChildEventListener(new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                Spot spot = dataSnapshot.getValue(Spot.class);
-                Log.d(TAG,dataSnapshot.getKey() + " userid: "+spot.userId + "time: "+ spot.time + " .");
-                activity.setUserSpot(spot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-
         });
 
     }
