@@ -1,5 +1,7 @@
 package it.unipi.iet.onspot;
 import android.app.DatePickerDialog;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import android.content.DialogInterface;
@@ -19,26 +21,41 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
 
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
+public class ProfileActivity extends BaseActivity implements View.OnClickListener{
 
     // variable declaration
     private EditText birthday;
     private EditText gender;
-    EditText firstName;
-    EditText lastName;
-    AlertDialog.Builder builder;
-    Uri photo_uri = null;
-    AlertDialog dialog;
+    private EditText firstName;
+    private EditText lastName;
+    private AlertDialog.Builder builder;
+    private Uri photo_uri = null;
+    private AlertDialog dialog;
     private String TAG = "ProfileActivity";
-    AuthUtilities AuthUt;
-    int PERMISSION_REQUEST_CODE = 1;
-    String path;
+    private AuthUtilities AuthUt;
+    private int PERMISSION_REQUEST_CODE = 1;
+
+    private String path;
+    private String Name;
+    private String Surname;
+    private String day;
+    private String gen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +145,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     // Click on join button
     public void join_user(){
 
-        String Name = firstName.getText().toString();
-        String Surname = lastName.getText().toString();
-        String day = birthday.getText().toString();
-        String gen = gender.getText().toString();
+        Name = firstName.getText().toString();
+        Surname = lastName.getText().toString();
+        day = birthday.getText().toString();
+        gen = gender.getText().toString();
 
         //check format email and password
         if(!validate_form(Name,Surname))
@@ -145,9 +162,71 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         AuthUt.updateUserProfile(Name + " " + Surname,uri);
         Log.d(TAG,"Profile updated: "+ AuthUt.getDisplayName());
 
+        showProgressDialog();
+
+        //Retrieve userId
+        String userId = AuthUt.getUser().getUid();
+
+        if(path != null ) {
+            //Start the task to save spot multimedia content in the storage
+            StorageReference storageRef = FirebaseStorage.getInstance()
+                    .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
+            Uri file = Uri.fromFile(new File(path));
+
+            StorageReference childRef = storageRef.child(userId + "/" + file.getLastPathSegment());
+            Log.d(TAG, "File Storage Reference: " + childRef.getPath());
+            UploadTask uploadTask = childRef.putFile(file);
+            uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Upload succeeded
+                    Log.d(TAG, "Entered in onSuccess");
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    String contentURL = null;
+                    if (downloadUrl != null) {
+                        contentURL = downloadUrl.toString();
+                    }
+                    saveUserOnDatabase(contentURL);
+                    hideProgressDialog();
+
+                    Toast.makeText(ProfileActivity.this, "Used created correctly",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Upload failed
+                    Log.w(TAG, "Entered in onFailure", exception);
+                    hideProgressDialog();
+                    Toast.makeText(ProfileActivity.this, "Error: upload failed",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Observe state change events such as progress, pause, and resume
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    Log.d(TAG, "Upload is " + progress + "% done");
+                    setmProgressDialog((int) progress);
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "Upload is paused");
+                }
+            });
+        }
+    }
+
+    // Save Data on DB
+
+    public void saveUserOnDatabase(String photoURL){
+
         // save user extra personal info in the db
         DatabaseUtilities db = new DatabaseUtilities();
-        db.writeNewUser(AuthUt.getUser().getUid(),Name,Surname,day,gen);
+        db.writeNewUser(AuthUt.getUser().getUid(),Name,Surname,photoURL,day,gen);
 
         // Redirect user to MapsFragment after saved info
         Intent i = new Intent(ProfileActivity.this,MapsActivity.

@@ -43,6 +43,7 @@
     <string name="description">Description</string>
     <string name="category">Category</string>
     <string name="save">Save</string>
+    <string name="title">Title</string>
 
     <!-- String for Search Fragment -->
     <string name="search_button">Search</string>

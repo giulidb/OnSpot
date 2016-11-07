@@ -28,6 +28,8 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     private Button audio;
     private EditText category;
     private EditText description;
+    private EditText title;
+
     CoordinatorLayout.Behavior behavior;
 
 
@@ -73,6 +75,8 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         audio = (Button) view.findViewById(R.id.audio);
         category = (EditText) view.findViewById(R.id.category);
         description = (EditText) view.findViewById(R.id.description);
+        title = (EditText) view.findViewById(R.id.title);
+
 
         return view;
     }
@@ -107,6 +111,9 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
     public String getDescription() { return description.getText().toString(); }
 
     public String getCategory() { return category.getText().toString(); }
+
+    public String getTitle() { return title.getText().toString(); }
+
 
 }
 

@@ -39,19 +39,19 @@ public class DatabaseUtilities {
     }
 
     // Insert a new user in the db
-    public void writeNewUser(String userId, String name, String lastName, String birthday,String gender) {
+    public void writeNewUser(String userId, String name, String lastName,String photoURL, String birthday,String gender) {
 
-        User user = new User(name, lastName, birthday, gender);
+        User user = new User(name, lastName, photoURL, birthday, gender);
         mDatabase.child("users").child(userId).setValue(user);
 
     }
 
     // Insert a new spot in the db
-    public void writeNewSpot(String userId, String description, String category, String contentURL,
+    public void writeNewSpot(String userId, String description, String title,String category, String contentURL,
                              double Lat, double Lng, String time, String type) {
 
         DatabaseReference newRef = mDatabase.child("spots").push();
-        newRef.setValue(new Spot(userId, description, category, contentURL, Lat, Lng, time, type));
+        newRef.setValue(new Spot(userId, description, title, category, contentURL, Lat, Lng, time, type));
 
     }
 

@@ -79,12 +79,25 @@
 
     <EditText
         android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:hint="@string/title"
+        android:gravity="top"
+        android:id="@+id/title"
+        android:layout_below="@+id/layout_inner"
+        android:layout_alignStart="@+id/layout_inner"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="6dp"/>
+
+    <EditText
+        android:layout_width="300dp"
         android:layout_height="90dp"
         android:background="@android:color/white"
         android:hint="@string/description"
         android:gravity="top"
         android:id="@+id/description"
-        android:layout_below="@+id/layout_inner"
+        android:layout_below="@+id/title"
         android:layout_alignStart="@+id/layout_inner"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="6dp"
