@@ -72,11 +72,24 @@ public abstract class ImageListFragment extends Fragment {
         mAdapter = new FirebaseRecyclerAdapter<Spot, SpotViewHolder>(Spot.class, R.layout.item_image,
                 SpotViewHolder.class, uploadsQuery) {
             @Override
-            protected void populateViewHolder(final SpotViewHolder viewHolder, final Spot model, final int position) {
+            protected void populateViewHolder(final SpotViewHolder viewHolder, final Spot model,
+                                              final int position) {
                 final DatabaseReference upsRef = getRef(position);
                 Log.d("ImageListFragment","populate view holder");
                 // Bind Upload to ViewHolder, setting OnClickListener for the star button
-                viewHolder.bindToUpload(context, model);
+                viewHolder.bindToUpload(context, model, new View.OnClickListener() {
+                    //Click listener for hearts
+                    @Override
+                    public void onClick(View starView) {
+
+                    }
+                }, new View.OnClickListener() {
+                    // Click listener for reproducing media
+                    @Override
+                    public void onClick(View starView) {
+
+                    }
+                });
             }
         };
         Log.d(TAG, "FirebaseRecyclerAdapter created");

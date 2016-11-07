@@ -48,7 +48,8 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         heartImageView = (ImageView) itemView.findViewById(R.id.heart_image);
     }
 
-    public void bindToUpload(Context cont, Spot upload) {
+    public void bindToUpload(Context cont, Spot upload, View.OnClickListener heartClickListener,
+                             View.OnClickListener mediaClickListener) {
 
         context = cont;
         // Title layout
@@ -58,16 +59,15 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
 
         // Center content layout
         //TODO: fare in modo che funzioni anche con video e audio
-        handleContent(upload);
+        handleContent(upload, mediaClickListener);
         descriptionView.setText(upload.description);
 
         // Bottom line layout
-        //TODO: sistemare layout perchè si vede solo la prima immagine
         loadProfile(upload);
 
         //TODO: implementare cuori
         heartTextView.setText("5"); //upload.numHeart
-        heartImageView.setImageResource(R.drawable.heart);
+        heartImageView.setOnClickListener(heartClickListener);
     }
 
     // Function that returns the category icon correspondent to a certain category name
@@ -81,16 +81,20 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         return R.drawable.dots;
     }
 
-    public void handleContent(Spot upload) {
+    public void handleContent(Spot upload, View.OnClickListener mediaClickListener) {
         switch(upload.Type) {
             case "image":
                 Picasso.with(context).load(upload.contentURL).into(contentImageView);
                 break;
             case "video":
-
+                //Picasso.with(context).load(upload.frameURL).into(contentImageView);
+                play.setVisibility(View.VISIBLE);
+                contentImageView.setOnClickListener(mediaClickListener);
                 break;
             case "audio":
                 contentImageView.setImageResource(R.drawable.volume);
+                audio.setVisibility(View.VISIBLE);
+                contentImageView.setOnClickListener(mediaClickListener);
                 break;
         }
     }
@@ -104,6 +108,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
                 // Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 userTextView.setText(user.firstName);
+                //TODO: farla venire tonda
                 Picasso.with(context).load(user.photoURL).into(userImageView);
             }
             @Override
