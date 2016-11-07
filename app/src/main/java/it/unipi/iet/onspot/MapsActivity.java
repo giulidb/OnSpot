@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -89,8 +90,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     private Location mLastLocation;
     private LatLngBounds mLatLngBounds;
     private ClusterManager<MarkerItem> mClusterManager;
-
-
+    private Marker marker;
 
     // Firebase variables
     private AuthUtilities AuthUt;
@@ -110,6 +110,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     // Add Spot variables
     private BottomSheetDialogFragment AddSpotFrag;
     private String description;
+    private String title;
     private String category;
     private String path;
     private String type;
@@ -548,6 +549,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         final AddSpotFragment fragment = retrieveFragment();
         description = fragment.getDescription();
         category = fragment.getCategory();
+        title = fragment.getTitle();
         Log.d(TAG,"Path to media file is"+path);
 
         //Check if there is something missing in the fields
@@ -652,7 +654,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             double Lng = mLastLocation.getLongitude();
             //Save spot info in the db
             DatabaseUtilities db = new DatabaseUtilities();
-            db.writeNewSpot(userId, description, category, contentURL, Lat, Lng, currentTime,type);
+            db.writeNewSpot(userId, description, title,category, contentURL, Lat, Lng, currentTime,type);
 
 
     }
@@ -664,7 +666,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     // Function called when the user presses Search
     public void onMapSearch(View view) {
-        // Retrieve description and category
         SearchFragment fragment = (SearchFragment) getSupportFragmentManager()
                 .findFragmentById(SearchFrag.getId());
         String location = fragment.getLocation();
@@ -679,7 +680,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         if(addressList!=null) {
             Address address = addressList.get(0);
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mGoogleMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+
+            // Check if the user has previously used search function if does remove previous marker
+            if(marker != null )
+                marker.remove();
+
+            marker = mGoogleMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         } else {
             Toast.makeText(this, "Invalid location", Toast.LENGTH_SHORT).show();
