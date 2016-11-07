@@ -24,7 +24,6 @@
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
         android:id="@+id/photoProfile"
-        android:src="@drawable/avataryellow"
         android:contentDescription="@string/avatarprofile"
         android:foregroundGravity="left"
         />

@@ -102,6 +102,7 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
                             ImageView image = new ImageView(getActivity());
                             image.setOnClickListener(ListSpotFragment.this);
                             image.setTag(spot);
+                            image.setPadding(4,4,4,4);
                             Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(image);
 
 

@@ -97,11 +97,11 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
         content = (ImageView)view.findViewById(R.id.content);
 
 
-        title.setText("Spot: "+spot.title);
+        title.setText(spot.title);
         date.setText(" "+spot.time);
         category.setText(" "+spot.category);
         description.setText(" "+spot.description);
-        Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(content);
+        Picasso.with(getActivity()).load(spot.contentURL).resize(180, 180).centerCrop().into(content);
 
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
