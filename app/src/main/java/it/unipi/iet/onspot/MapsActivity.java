@@ -618,6 +618,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     //Check if there is something missing in the fields
     boolean formIsValid() {
 
+        if(title.isEmpty()) {
+            Toast.makeText(this, "Title field cannot be empty.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         if(description.isEmpty()) {
             Toast.makeText(this, "Description field cannot be empty.", Toast.LENGTH_LONG).show();
             return false;
@@ -724,7 +729,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         protected void onBeforeClusterItemRendered(MarkerItem item, MarkerOptions markerOptions) {
             // Draw a single marker.
             // Set the info window to show their name.
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(item.icon_id)).title(item.spot.description);
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(item.icon_id)).title(item.spot.title);
         }
 
         @Override

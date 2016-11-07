@@ -2,6 +2,7 @@ package it.unipi.iet.onspot.fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -21,10 +22,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
 import it.unipi.iet.onspot.R;
+import it.unipi.iet.onspot.utilities.CircleTransform;
 import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.User;
 
@@ -37,10 +40,12 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
     private CoordinatorLayout.Behavior behavior;
     private Spot spot;
 
+    private TextView title;
     private TextView date;
     private TextView category;
     private TextView description;
     private ImageView user_photo;
+    private ImageView content;
     private TextView user_name;
 
     private String TAG = "VisualizeSpot";
@@ -83,14 +88,21 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_visualizespot, container, false);
 
+        title = (TextView)view.findViewById(R.id.spot);
         date = (TextView)view.findViewById(R.id.date);
         category = (TextView)view.findViewById(R.id.category);
         description = (TextView)view.findViewById(R.id.description);
         user_name = (TextView)view.findViewById(R.id.user_name);
+        user_photo = (ImageView)view.findViewById(R.id.user_photo);
+        content = (ImageView)view.findViewById(R.id.content);
 
+
+        title.setText("Spot: "+spot.title);
         date.setText(" "+spot.time);
         category.setText(" "+spot.category);
         description.setText(" "+spot.description);
+        Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(content);
+
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference newRef = mDatabase.child("users").child(spot.userId);
@@ -101,8 +113,8 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
                 User user = dataSnapshot.getValue(User.class);
                 Log.d(TAG,"User: "+ user.firstName);
                 user_name = (TextView)view.findViewById(R.id.user_name);
-                user_name.setText(user.firstName+" "+user.lastName);
-                //TODO: Recuperare immagine dallo storage
+                user_name.setText(user.firstName);
+                Picasso.with(getActivity()).load(user.photoURL).transform(new CircleTransform()).into(user_photo);
 
 
             }
@@ -113,6 +125,7 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
                 // ...
             }
         });
+
 
         return view;
     }

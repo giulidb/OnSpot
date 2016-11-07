@@ -2,6 +2,10 @@ package it.unipi.iet.onspot.utilities;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -9,12 +13,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
+
 
 import it.unipi.iet.onspot.R;
 
@@ -48,8 +55,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         heartImageView = (ImageView) itemView.findViewById(R.id.heart_image);
     }
 
-    public void bindToUpload(Context cont, Spot upload, View.OnClickListener heartClickListener,
-                             View.OnClickListener mediaClickListener) {
+    public void bindToUpload(Context cont, Spot upload) {
 
         context = cont;
         // Title layout
@@ -59,15 +65,16 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
 
         // Center content layout
         //TODO: fare in modo che funzioni anche con video e audio
-        handleContent(upload, mediaClickListener);
+        handleContent(upload);
         descriptionView.setText(upload.description);
 
         // Bottom line layout
+        //TODO: sistemare layout perchè si vede solo la prima immagine
         loadProfile(upload);
 
         //TODO: implementare cuori
         heartTextView.setText("5"); //upload.numHeart
-        heartImageView.setOnClickListener(heartClickListener);
+        heartImageView.setImageResource(R.drawable.heart);
     }
 
     // Function that returns the category icon correspondent to a certain category name
@@ -81,20 +88,16 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         return R.drawable.dots;
     }
 
-    public void handleContent(Spot upload, View.OnClickListener mediaClickListener) {
+    public void handleContent(Spot upload) {
         switch(upload.Type) {
             case "image":
                 Picasso.with(context).load(upload.contentURL).into(contentImageView);
                 break;
             case "video":
-                //Picasso.with(context).load(upload.frameURL).into(contentImageView);
-                play.setVisibility(View.VISIBLE);
-                contentImageView.setOnClickListener(mediaClickListener);
+
                 break;
             case "audio":
                 contentImageView.setImageResource(R.drawable.volume);
-                audio.setVisibility(View.VISIBLE);
-                contentImageView.setOnClickListener(mediaClickListener);
                 break;
         }
     }
@@ -108,8 +111,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
                 // Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 userTextView.setText(user.firstName);
-                //TODO: farla venire tonda
-                Picasso.with(context).load(user.photoURL).into(userImageView);
+                Picasso.with(context).load(user.photoURL).transform(new CircleTransform()).into(userImageView);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -120,3 +122,4 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         });
     }
 }
+

@@ -12,9 +12,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.Calendar;
 
 import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.CircleTransform;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.User;
@@ -38,18 +42,9 @@ public class myProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
-        ImageView profile_photo = (ImageView) findViewById(R.id.photoProfile);
 
         //Authentication
         AuthUt = new AuthUtilities();
-
-        // Retrieve Profile Photo by FIREBASE_USER
-        //// TODO: 03/11/2016 Se vogliamo che anche altri utenti vedano la foto usare Storage per salvare e recuperare
-        //TODO: fare in modo che non crashi se non c'è l'immagine
-        Bitmap bm = BitmapFactory.decodeFile(MultimediaUtilities.getRealPathFromURI(this,AuthUt.getPhoto_url()));
-        bm = MultimediaUtilities.rotateBitmap(bm,MultimediaUtilities.getRealPathFromURI(this,AuthUt.getPhoto_url()));
-        bm = MultimediaUtilities.getRoundedCroppedBitmap(bm, 200);
-        profile_photo.setImageBitmap(bm);
 
         // Retrieve User info from FIREBASE DATABASE
         DatabaseUtilities db = new DatabaseUtilities();
@@ -89,6 +84,8 @@ public class myProfileActivity extends AppCompatActivity {
         TextView Name = (TextView)findViewById(R.id.completeName);
         TextView Age = (TextView)findViewById(R.id.age);
         TextView Gender = (TextView)findViewById(R.id.sex);
+        ImageView profile_photo = (ImageView) findViewById(R.id.photoProfile);
+
 
         Name.setText(user.firstName + " " + user.lastName);
         Gender.setText(user.gender);
@@ -97,6 +94,9 @@ public class myProfileActivity extends AppCompatActivity {
         int year = Integer.parseInt(user.birthday.substring(user.birthday.length()-4));
         int age = today.get(Calendar.YEAR) - year ;
         Age.setText("Age: "+age);
+
+        Picasso.with(this).load(user.photoURL).transform(new CircleTransform()).into(profile_photo);
+
 
     }
 

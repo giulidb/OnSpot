@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.Spot;
@@ -91,22 +92,21 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Spot spot = child.getValue(Spot.class);
                         if(spot.Lng > lowLng && spot.Lng < highLng){
-                            Log.d(TAG, "Spot: " + spot.description);
+                            Log.d(TAG, spot.description);
                             Log.d(TAG,"Spot lat: "+spot.Lat+ ", LowLat: "+lowLat+", HighLat: "+highLat);
                             Log.d(TAG,"Spot lng: "+spot.Lng+ ", LowLng: "+lowLng+", HighLng: "+highLng);
 
                             LinearLayout innerLayout = new LinearLayout(getActivity());
                             innerLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-                            //TODO: Recuperare immagine dallo storage
                             ImageView image = new ImageView(getActivity());
-                            Bitmap bitmap = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.rectplus);
-                            image.setImageBitmap(bitmap);
                             image.setOnClickListener(ListSpotFragment.this);
                             image.setTag(spot);
+                            Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(image);
+
 
                             TextView title = new TextView(getActivity());
-                            title.setText(spot.description);
+                            title.setText(spot.title);
                             title.setPadding(16,16,16,16);
 
                             innerLayout.addView(image);
