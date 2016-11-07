@@ -26,15 +26,15 @@
                 android:id="@+id/image_category"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginRight="6dip" />
+                android:layout_marginEnd="6dip" />
 
             <TextView
                 android:id="@+id/text_category"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/image_category"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/image_category"
                 android:padding="5dp"
                 android:gravity="center"
                 android:textSize="12sp" />
@@ -43,8 +43,8 @@
                 android:id="@+id/headline"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/image_category"
-                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@id/image_category"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:padding="5dp"
                 android:gravity="center"
@@ -55,6 +55,7 @@
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
+            android:contentDescription="@string/image"
             android:layout_height="160dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitXY"
@@ -114,20 +115,17 @@
 
             <ImageView
                 android:id="@+id/image_user"
-                android:src="@drawable/museum_paintings"
                 android:layout_width="50dp"
+                android:contentDescription="@string/image"
                 android:layout_height="50dp"
-                android:layout_marginLeft="6dip"
-                android:layout_alignParentLeft="true"/>
+                android:layout_marginStart="6dip"
+                />
 
                 <TextView
                     android:id="@+id/text_user"
-                    android:text="giulia"
                     android:layout_width="wrap_content"
                     android:layout_height="26dip"
-                    android:layout_alignParentBottom="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_toRightOf="@id/image_user"
                     android:padding="5dp"
                     android:textSize="12sp" />
 
@@ -136,17 +134,18 @@
 
             <ImageView
                 android:id="@+id/heart_image"
+                android:contentDescription="@string/image"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="10dip"
-                android:layout_alignParentRight="true"/>
+                android:layout_marginStart="10dip"
+                android:layout_alignParentEnd="true"/>
 
             <TextView
                 android:id="@+id/heart_number"
                 android:layout_width="wrap_content"
                 android:layout_height="26dip"
                 android:layout_alignParentBottom="true"
-                android:layout_toLeftOf="@id/heart_image"
+                android:layout_toStartOf="@id/heart_image"
                 android:padding="5dp"
                 android:gravity="center"
                 android:textSize="12sp" />
