@@ -1,5 +1,6 @@
 package it.unipi.iet.onspot;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.TabLayout;
@@ -42,6 +43,8 @@ public class myProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
+        Intent i = getIntent();
+        Bundle b = i.getExtras();
 
         //Authentication
         AuthUt = new AuthUtilities();
@@ -75,6 +78,13 @@ public class myProfileActivity extends AppCompatActivity {
         mViewPager.setAdapter(mPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        // If the user clicked on the Favourites button, switch tabs
+        if(b!=null && b.get("extra").toString().equals("heart")) {
+            TabLayout.Tab tab = tabLayout.getTabAt(1);
+            tab.select();
+        }
+
         Log.d(TAG, "ViewPager created");
 
     }

@@ -54,6 +54,7 @@
             android:layout_toEndOf="@+id/plus"
             android:text="@string/toolbar4"
             android:contentDescription="@string/toolbar4"
+            android:onClick="toolbarOnClick"
             android:src="@drawable/heart"
             style="@style/Widget.AppCompat.ActionButton"/>
 

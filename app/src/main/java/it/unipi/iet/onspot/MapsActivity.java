@@ -398,7 +398,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
                 startActivity(i);
                 break;
-
+            case R.id.heart:
+                Intent j = new Intent(MapsActivity.this,myProfileActivity.class);
+                j.putExtra("extra","heart");
+                startActivity(j);
+                break;
         }
     }
 
