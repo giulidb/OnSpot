@@ -79,9 +79,9 @@ public abstract class ImageListFragment extends Fragment {
 
                 // Determine if the current user has liked this image and set UI accordingly
                 if (model.hearts.containsKey(getUid())) {
-                    viewHolder.heartImageView.setImageResource(R.drawable.heart);
+                    viewHolder.heartImageView.setImageResource(R.drawable.heart_full);
                 } else {
-                    viewHolder.heartImageView.setImageResource(R.drawable.dots);
+                    viewHolder.heartImageView.setImageResource(R.drawable.heart_empty);
                 }
 
                 // Bind Upload to ViewHolder, setting OnClickListener for the star button
