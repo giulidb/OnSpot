@@ -1,8 +1,9 @@
 package it.unipi.iet.onspot.fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -13,21 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.firebase.appindexing.FirebaseUserActions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
 import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.CircleTransform;
+import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.User;
 
@@ -48,7 +43,9 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
     private ImageView content;
     private TextView user_name;
 
-    private String TAG = "VisualizeSpot";
+    private final String TAG = "VisualizeSpot";
+    public static final String CONTENT_URL = "it.unipi.iet.onspot.CONTENT_URL";
+    public static final String TYPE = "it.unipi.iet.onspot.TYPE";
 
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -101,7 +98,39 @@ public class VisualizeSpotFragment extends BottomSheetDialogFragment {
         date.setText(" "+spot.time);
         category.setText(" "+spot.category);
         description.setText(" "+spot.description);
-        Picasso.with(getActivity()).load(spot.contentURL).resize(180, 180).centerCrop().into(content);
+
+        switch(spot.Type){
+            case "image":
+            Picasso.with(getActivity()).load(spot.contentURL).resize(180, 180).centerCrop().into(content);
+            break;
+
+            //TODO: fare in modo che sia decente
+            case "audio":
+                content.setImageResource(R.drawable.volume);
+                content.setPadding(60,60,60,60);
+                content.setBackgroundColor(Color.parseColor("#C45852"));
+            break;
+
+            case "video":
+                content.setImageResource(R.drawable.video);
+                content.setPadding(60,60,60,60);
+                content.setBackgroundColor(Color.parseColor("#C45852"));
+
+
+        }
+
+            content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Start MediaStreamer to Reproduce Media
+                    //TODO: vedere se può andare anche per le immagini
+                    Intent i = new Intent(getActivity(), MediaStreamer.class);
+                    i.putExtra(CONTENT_URL, spot.contentURL);
+                    Log.d(TAG,spot.Type);
+                    i.putExtra(TYPE,spot.Type);
+                    startActivity(i);
+                }
+            });
 
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();

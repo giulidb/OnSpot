@@ -21,8 +21,8 @@
         android:id="@+id/spot" />
 
     <ImageView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_width="150dp"
         android:contentDescription="@string/image"
         android:scaleType="fitXY"
         android:id="@+id/content"
@@ -66,7 +66,6 @@
         android:layout_alignStart="@id/date"
         android:layout_below="@+id/category" />
 
-
     <ImageView
         android:layout_height="50dp"
         android:layout_width="50dp"
@@ -74,11 +73,8 @@
         android:padding="8dp"
         android:scaleType="fitXY"
         android:id="@+id/user_photo"
-        android:layout_alignStart="@id/content"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="16dp"
-        android:layout_below="@id/description"
-        />
+        android:layout_below="@+id/content"
+        android:layout_alignStart="@+id/content" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -88,5 +84,7 @@
         android:id="@+id/user_name"
         android:paddingTop="16dp"
         />
+
+
 
 </RelativeLayout>

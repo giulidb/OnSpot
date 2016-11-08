@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -387,8 +388,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 break;
             case R.id.list_spot:
                 ListSpotFragment ListFrag = new ListSpotFragment();
+                if(mLatLngBounds != null ){
                 ListFrag.setLatLng(mLatLngBounds);
-                ListFrag.show(getSupportFragmentManager(), ListFrag.getTag());
+                ListFrag.show(getSupportFragmentManager(), ListFrag.getTag());}
                 break;
             case R.id.plus:
                 AddSpotFrag = new AddSpotFragment();

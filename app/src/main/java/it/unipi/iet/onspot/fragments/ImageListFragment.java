@@ -2,6 +2,7 @@ package it.unipi.iet.onspot.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,10 +21,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
-
 import it.unipi.iet.onspot.R;
+import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.utilities.Spot;
 import it.unipi.iet.onspot.utilities.SpotViewHolder;
+
 
 
 public abstract class ImageListFragment extends Fragment {
@@ -36,6 +37,9 @@ public abstract class ImageListFragment extends Fragment {
     private FirebaseRecyclerAdapter<Spot, SpotViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
+    private static final String CONTENT_URL = "it.unipi.iet.onspot.CONTENT_URL";
+    private static final String TYPE = "it.unipi.iet.onspot.TYPE";
+
 
     public ImageListFragment() {}
 
@@ -102,6 +106,20 @@ public abstract class ImageListFragment extends Fragment {
                     // Click listener for reproducing media
                     @Override
                     public void onClick(View contentView) {
+
+                        Log.d(TAG,"click on View "+ contentView.getTag());
+
+                        // Start MediaStreamer to Reproduce Media
+                        //TODO: vedere se può andare anche per le immagini
+                        Intent i = new Intent(getActivity(), MediaStreamer.class);
+                        String content_url = contentView.getTag().toString().split(";")[0];
+                        content_url = content_url.substring(0,content_url.length()-1);
+                        String type = contentView.getTag().toString().split(";")[1];
+                        Log.d(TAG, content_url);
+                        Log.d(TAG,type);
+                        i.putExtra(CONTENT_URL,content_url );
+                        i.putExtra(TYPE,type);
+                        startActivity(i);
 
                     }
                 });

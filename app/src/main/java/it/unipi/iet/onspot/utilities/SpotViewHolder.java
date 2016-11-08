@@ -2,6 +2,7 @@ package it.unipi.iet.onspot.utilities;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +27,6 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
     private TextView categoryTextView;
     private TextView descriptionView;
     private ImageView contentImageView;
-    private Button play;
-    private Button audio;
     private ImageView userImageView;
     private TextView userTextView;
     private TextView heartTextView;
@@ -85,16 +84,21 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
                 Picasso.with(context).load(upload.contentURL).into(contentImageView);
                 break;
             case "video":
-                //Picasso.with(context).load(upload.frameURL).into(contentImageView);
-                //play.setVisibility(View.VISIBLE);
-                contentImageView.setOnClickListener(mediaClickListener);
+                //TODO: fare in modo che sia decente
+                contentImageView.setImageResource(R.drawable.video_big);
+                contentImageView.setBackgroundColor(Color.parseColor("#C45852"));
+
                 break;
             case "audio":
+                //TODO: fare in modo che sia decente
                 contentImageView.setImageResource(R.drawable.volume);
-                //audio.setVisibility(View.VISIBLE);
-                contentImageView.setOnClickListener(mediaClickListener);
+                contentImageView.setBackgroundColor(Color.parseColor("#C45852"));
                 break;
         }
+
+        contentImageView.setTag(upload.contentURL +";"+upload.Type);
+        contentImageView.setOnClickListener(mediaClickListener);
+
     }
 
     public void loadProfile(Spot spot) {

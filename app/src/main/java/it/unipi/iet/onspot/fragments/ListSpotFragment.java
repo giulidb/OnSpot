@@ -3,6 +3,7 @@ package it.unipi.iet.onspot.fragments;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -102,8 +103,26 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
                             ImageView image = new ImageView(getActivity());
                             image.setOnClickListener(ListSpotFragment.this);
                             image.setTag(spot);
-                            image.setPadding(4,4,4,4);
-                            Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(image);
+
+                            switch (spot.Type){
+
+                                case "image":
+                                      Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(image);
+                                      break;
+
+                                //TODO: fare in modo che siano decenti
+                                case "audio":
+                                    image.setImageResource(R.drawable.volume);
+                                    image.setBackgroundColor(Color.parseColor("#C45852"));
+                                    image.setLayoutParams(new LinearLayout.LayoutParams(150,150));
+                                    break;
+                                case "video":
+                                    image.setImageResource(R.drawable.video_big);
+                                    image.setBackgroundColor(Color.parseColor("#C45852"));
+                                    image.setLayoutParams(new LinearLayout.LayoutParams(150,150));
+
+                                    break;
+                            }
 
 
                             TextView title = new TextView(getActivity());
@@ -136,27 +155,22 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
 
     public void setLatLng(LatLngBounds mLatLngBounds){
 
+
         /* Initialization of coordinates bounds of the visible regions */
-        if (mLatLngBounds.northeast.latitude < mLatLngBounds.southwest.latitude)
-        {
-            lowLat = mLatLngBounds.northeast.latitude;
-            highLat = mLatLngBounds.southwest.latitude;
-        }
-        else
-        {
-            highLat = mLatLngBounds.northeast.latitude;
-            lowLat =  mLatLngBounds.southwest.latitude;
-        }
-        if (mLatLngBounds.northeast.longitude < mLatLngBounds.southwest.longitude)
-        {
-            lowLng = mLatLngBounds.northeast.longitude;
-            highLng = mLatLngBounds.southwest.longitude;
-        }
-        else
-        {
-            highLng = mLatLngBounds.northeast.longitude;
-            lowLng = mLatLngBounds.southwest.longitude;
-        }
+            if (mLatLngBounds.northeast.latitude < mLatLngBounds.southwest.latitude) {
+                lowLat = mLatLngBounds.northeast.latitude;
+                highLat = mLatLngBounds.southwest.latitude;
+            } else {
+                highLat = mLatLngBounds.northeast.latitude;
+                lowLat = mLatLngBounds.southwest.latitude;
+            }
+            if (mLatLngBounds.northeast.longitude < mLatLngBounds.southwest.longitude) {
+                lowLng = mLatLngBounds.northeast.longitude;
+                highLng = mLatLngBounds.southwest.longitude;
+            } else {
+                highLng = mLatLngBounds.northeast.longitude;
+                lowLng = mLatLngBounds.southwest.longitude;
+            }
 
     }
 

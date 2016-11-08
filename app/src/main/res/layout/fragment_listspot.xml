@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/spot_list_container"
             android:orientation="vertical"
+            android:padding="4dp"
             ></LinearLayout>
 
     </ScrollView>
