@@ -54,12 +54,12 @@ public class myProfileActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             private final Fragment[] mFragments = new Fragment[] {
-                    new LikedImagesFragment(),
-                    new MyImagesFragment()
+                    new MyImagesFragment(),
+                    new LikedImagesFragment()
             };
             private final String[] mFragmentNames = new String[] {
-                    getString(R.string.heading_liked),
-                    getString(R.string.heading_my_images)
+                    getString(R.string.heading_my_images),
+                    getString(R.string.heading_liked)
             };
             @Override
             public Fragment getItem(int position) { return mFragments[position]; }

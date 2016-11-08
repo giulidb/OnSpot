@@ -2,6 +2,9 @@ package it.unipi.iet.onspot.utilities;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /* Java Object representing the spot in the db */
 @IgnoreExtraProperties
 public class Spot {
@@ -15,6 +18,8 @@ public class Spot {
     public double Lng;
     public String time;
     public String Type;
+    public int heartCount = 0;
+    public Map<String, Boolean> hearts = new HashMap<>();
 
     public Spot() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)

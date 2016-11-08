@@ -31,7 +31,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
     private ImageView userImageView;
     private TextView userTextView;
     private TextView heartTextView;
-    private ImageView heartImageView;
+    public ImageView heartImageView;
     private Context context;
 
     public SpotViewHolder(View itemView) {
@@ -64,9 +64,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
 
         // Bottom line layout
         loadProfile(upload);
-
-        //TODO: implementare cuori
-        heartTextView.setText("5"); //upload.numHeart
+        heartTextView.setText(String.valueOf(upload.heartCount));
         heartImageView.setOnClickListener(heartClickListener);
     }
 
