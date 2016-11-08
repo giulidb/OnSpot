@@ -44,11 +44,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
@@ -56,11 +56,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.Algorithm;
+import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.text.DateFormat;
 import java.util.List;
@@ -91,6 +94,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     private LatLngBounds mLatLngBounds;
     private ClusterManager<MarkerItem> mClusterManager;
     private Marker marker;
+    private Algorithm<MarkerItem> clusterManagerAlgorithm;
+
 
     // Firebase variables
     private AuthUtilities AuthUt;
@@ -209,16 +214,19 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         mClusterManager.setOnClusterItemClickListener(this);
         //set ClusterRendered for marker icon and cluster color
         mClusterManager.setRenderer(new MarkerRenderer());
+        // Instantiate the cluster manager algorithm as is done in the ClusterManager
+        clusterManagerAlgorithm = new NonHierarchicalDistanceBasedAlgorithm();
+        // Set this local algorithm in clusterManager
+        mClusterManager.setAlgorithm(clusterManagerAlgorithm);
 
 
         /* Loading Markers from Firebase Database */
         final DatabaseReference newRef = FirebaseDatabase.getInstance().getReference().child("spots");
-        newRef.addValueEventListener( new ValueEventListener() {
+        newRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey){
 
-                    Spot spot = child.getValue(Spot.class);
+                    Spot spot = dataSnapshot.getValue(Spot.class);
                     Log.d(TAG, "Spot: " + spot.description);
                     // get category icon id
                     Integer id = getIconId(spot.category);
@@ -227,11 +235,30 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     // Add marker to Cluster Manager
                     mClusterManager.addItem(offsetItem);
 
-                }
+
 
                 mClusterManager.cluster();
 
             }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                // When a spot was removed from the Database
+                Collection<MarkerItem> items = clusterManagerAlgorithm.getItems();
+                for(MarkerItem m : items){
+                    if(m.spot.equals(dataSnapshot.getValue(Spot.class)))
+                        mClusterManager.removeItem(m);
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
