@@ -60,6 +60,11 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Make the logo appear on the action bar
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.logo1_small);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_profile);
 
         // variables initialization
@@ -244,7 +249,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         ImageView photo = (ImageView) findViewById(R.id.imageProfile);
         int max_size = photo.getHeight();
         int width = photo.getWidth();
-        Log.d(TAG, "Logo size: height=" + max_size + " width: " + width);
+        Log.d(TAG, "logo size: height=" + max_size + " width: " + width);
 
         Bitmap bm = null;
         if (data != null) {

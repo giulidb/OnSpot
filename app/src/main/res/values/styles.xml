@@ -43,6 +43,7 @@
         <item name="android:width">30dip</item>
         <item name="android:height">30dip</item>
     </style>
+
     <!-- Style Title Dialog Box -->
     <style name="DialogWindowTitle">
         <item name="android:textAppearance">@style/TextAppearance.DialogWindowTitle</item>
