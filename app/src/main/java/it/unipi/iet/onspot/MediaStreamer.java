@@ -1,11 +1,8 @@
 package it.unipi.iet.onspot;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -14,7 +11,7 @@ import it.unipi.iet.onspot.R;
 
 
 /* Activity to play streaming video or audio file and to visualize image in full screen */
-public class MediaStreamer extends Activity {
+public class MediaStreamer extends AppCompatActivity {
 
 
 

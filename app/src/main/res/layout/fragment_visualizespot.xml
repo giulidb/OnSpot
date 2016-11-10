@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:background="#E9E9E9"
@@ -66,6 +67,14 @@
         android:layout_alignStart="@id/date"
         android:layout_below="@+id/category" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/content"
+        android:layout_alignStart="@+id/content"
+        >
+
     <ImageView
         android:layout_height="50dp"
         android:layout_width="50dp"
@@ -73,18 +82,45 @@
         android:padding="8dp"
         android:scaleType="fitXY"
         android:id="@+id/user_photo"
-        android:layout_below="@+id/content"
-        android:layout_alignStart="@+id/content" />
+      />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/user_photo"
-        android:layout_alignTop="@id/user_photo"
         android:id="@+id/user_name"
         android:paddingTop="16dp"
         />
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:layout_gravity="end"
+            android:padding="8dp"
+           >
+
+
+            <ImageView
+                android:id="@+id/heart_image"
+                android:contentDescription="@string/image"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:id="@+id/heart_number"
+                android:layout_width="wrap_content"
+                android:layout_height="26dip"
+                android:padding="5dp"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/heart_image" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 
 </RelativeLayout>

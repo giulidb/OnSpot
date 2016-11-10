@@ -1,10 +1,6 @@
 package it.unipi.iet.onspot;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,20 +9,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-
 import java.util.Calendar;
-
 import it.unipi.iet.onspot.utilities.AuthUtilities;
 import it.unipi.iet.onspot.utilities.CircleTransform;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
-import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.User;
-
 import it.unipi.iet.onspot.fragments.LikedImagesFragment;
 import it.unipi.iet.onspot.fragments.MyImagesFragment;
 
@@ -112,7 +102,7 @@ public class myProfileActivity extends AppCompatActivity {
         Calendar today = Calendar.getInstance();
         int year = Integer.parseInt(user.birthday.substring(user.birthday.length()-4));
         int age = today.get(Calendar.YEAR) - year ;
-        Age.setText("Age: "+age);
+        Age.setText("@string/age" + age);
 
         Picasso.with(this).load(user.photoURL).transform(new CircleTransform()).into(profile_photo);
 

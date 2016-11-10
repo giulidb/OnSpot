@@ -1,23 +1,12 @@
 package it.unipi.iet.onspot.utilities;
 
-import android.app.Activity;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.google.firebase.database.ChildEventListener;
+import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import it.unipi.iet.onspot.myProfileActivity;
 
@@ -65,7 +54,6 @@ public class DatabaseUtilities {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
-                Log.d(TAG,"User: "+ user.firstName);
                 activity.setUserInfo(user);
             }
 

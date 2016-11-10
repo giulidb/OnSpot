@@ -9,14 +9,16 @@ import com.google.maps.android.clustering.ClusterItem;
  */
 
 public class MarkerItem implements ClusterItem {
-    public final LatLng mPosition;
+    private final LatLng mPosition;
     public final Integer icon_id;
     public final Spot spot;
+    public final String spot_key;
 
-    public MarkerItem(int icon_id,Spot spot) {
+    public MarkerItem(int icon_id,Spot spot,String spot_key) {
         mPosition = new LatLng(spot.Lat, spot.Lng);
         this.icon_id = icon_id;
         this.spot = spot;
+        this.spot_key = spot_key;
 
     }
 

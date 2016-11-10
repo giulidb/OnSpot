@@ -1,32 +1,33 @@
 package it.unipi.iet.onspot.fragments;
-
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
-
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
+import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.Spot;
+import it.unipi.iet.onspot.utilities.SpotViewHolder;
 
 /**
  *  Fragment that shows list of visible spots when users click on the list button in the toolbar
@@ -34,155 +35,242 @@ import it.unipi.iet.onspot.utilities.Spot;
 
 public class ListSpotFragment extends BottomSheetDialogFragment implements View.OnClickListener {
 
-        private CoordinatorLayout.Behavior behavior;
 
-        /* Coordinates Visible Regions */
-        double lowLat;
-        double lowLng;
-        double highLat;
-        double highLng;
+    /* Coordinates Visible Regions */
+    double lowLat;
+    double lowLng;
+    double highLat;
+    double highLng;
 
-        private String TAG = "ListSpotFragment";
+    private FirebaseRecyclerAdapter<Spot, SpotViewHolder> mAdapter;
+    private RecyclerView mRecycler;
+    private LinearLayoutManager mManager;
+    private DatabaseReference mDatabase;
 
-
-        private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
-
-            //create and associate a BottomSheetCallback to dismiss the Fragment when the sheet is hidden
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    dismiss();
-                }
+    private static final String CONTENT_URL = "it.unipi.iet.onspot.CONTENT_URL";
+    private static final String TYPE = "it.unipi.iet.onspot.TYPE";
+    private final String TAG = "ListSpotFragment";
 
 
-            }
+    private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        };
-
-        // Inflate a new layout file and retrieve the BottomSheetBehavior of the container view
+        //create and associate a BottomSheetCallback to dismiss the Fragment when the sheet is hidden
         @Override
-        public void setupDialog(Dialog dialog, int style) {
-            super.setupDialog(dialog, style);
-            View contentView = View.inflate(getContext(), R.layout.fragment_listspot, null);
-            dialog.setContentView(contentView);
-
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
-            behavior = params.getBehavior();
-
-            if( behavior != null && behavior instanceof BottomSheetBehavior ) {
-                ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
+        public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                dismiss();
             }
+
 
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View view = inflater.inflate(R.layout.fragment_listspot, container, false);
+        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+        }
+    };
 
-            final LinearLayout layout = (LinearLayout) view.findViewById(R.id.spot_list_container);
+    // Inflate a new layout file and retrieve the BottomSheetBehavior of the container view
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        CoordinatorLayout.Behavior behavior;
 
-            /* Loading of the list of Visible Spots */
-            final DatabaseReference spotRef = FirebaseDatabase.getInstance().getReference().child("spots");
-            spotRef.orderByChild("Lat").startAt(lowLat).endAt(highLat).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        Spot spot = child.getValue(Spot.class);
-                        if(spot.Lng > lowLng && spot.Lng < highLng){
-                            Log.d(TAG, spot.description);
-                            Log.d(TAG,"Spot lat: "+spot.Lat+ ", LowLat: "+lowLat+", HighLat: "+highLat);
-                            Log.d(TAG,"Spot lng: "+spot.Lng+ ", LowLng: "+lowLng+", HighLng: "+highLng);
+        View contentView = View.inflate(getContext(), R.layout.fragment_image_list, null);
+        dialog.setContentView(contentView);
 
-                            LinearLayout innerLayout = new LinearLayout(getActivity());
-                            innerLayout.setOrientation(LinearLayout.HORIZONTAL);
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
+        behavior = params.getBehavior();
 
-                            ImageView image = new ImageView(getActivity());
-                            image.setOnClickListener(ListSpotFragment.this);
-                            image.setTag(spot);
+        if (behavior != null && behavior instanceof BottomSheetBehavior) {
+            ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
+        }
 
-                            switch (spot.Type){
+    }
 
-                                case "image":
-                                      Picasso.with(getActivity()).load(spot.contentURL).resize(150, 150).centerCrop().into(image);
-                                      break;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_image_list, container, false);
 
-                                //TODO: fare in modo che siano decenti
-                                case "audio":
-                                    image.setImageResource(R.drawable.volume);
-                                    image.setBackgroundColor(Color.parseColor("#C45852"));
-                                    image.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-                                    break;
-                                case "video":
-                                    image.setImageResource(R.drawable.video_big);
-                                    image.setBackgroundColor(Color.parseColor("#C45852"));
-                                    image.setLayoutParams(new LinearLayout.LayoutParams(150,150));
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Log.d(TAG, "Database reference created");
+        mRecycler = (RecyclerView) view.findViewById(R.id.images_list);
+        mRecycler.setHasFixedSize(true);
+        Log.d(TAG, "Recycler reference created");
 
-                                    break;
+        // Set up Layout Manager, reverse layout
+        mManager = new LinearLayoutManager(getActivity());
+        mManager.setReverseLayout(true);
+        mManager.setStackFromEnd(true);
+        mRecycler.setLayoutManager(mManager);
+        Log.d(TAG, "Layout Manager created");
+        final Context context = this.getContext();
+
+        // Set up FirebaseRecyclerAdapter with the Query
+        Query uploadsQuery = getQuery(mDatabase);
+        mAdapter = new FirebaseRecyclerAdapter<Spot, SpotViewHolder>(Spot.class, R.layout.item_image,
+                SpotViewHolder.class, uploadsQuery) {
+            @Override
+            protected void populateViewHolder(final SpotViewHolder viewHolder, final Spot model,
+                                              final int position) {
+                final DatabaseReference upsRef = getRef(position);
+                Log.d("ImageListFragment", "populate view holder");
+
+                if (model.Lng > lowLng && model.Lng < highLng) {
+                    // Determine if the current user has liked this image and set UI accordingly
+                    if (model.hearts.containsKey(getUid())) {
+                        viewHolder.heartImageView.setImageResource(R.drawable.heart_full);
+                    } else {
+                        viewHolder.heartImageView.setImageResource(R.drawable.heart_empty);
+                    }
+
+                    // Bind Upload to ViewHolder, setting OnClickListener for the star button
+                    viewHolder.bindToUpload(context, model, new View.OnClickListener() {
+                        //Click listener for hearts
+                        @Override
+                        public void onClick(View heartView) {
+                            // Do not allow liking own images
+                            if (model.userId.compareTo(getUid()) == 0) {
+                                return;
                             }
 
+                            // Need to write to the place where the post is stored
+                            DatabaseReference uploadsRef = mDatabase.child("spots").child(upsRef.getKey());
+                            onHeartClicked(uploadsRef);
+                        }
+                    }, new View.OnClickListener() {
+                        // Click listener for reproducing media
+                        @Override
+                        public void onClick(View contentView) {
 
-                            TextView title = new TextView(getActivity());
-                            title.setText(spot.title);
-                            title.setPadding(16,16,16,16);
-
-                            innerLayout.addView(image);
-                            innerLayout.addView(title);
-
-                            layout.addView(innerLayout);
+                            Log.d(TAG, "click on View ");
+                            // Start MediaStreamer to Reproduce Media
+                            Intent i = new Intent(getActivity(), MediaStreamer.class);
+                            String content_url = contentView.getTag().toString().split(";")[0];
+                            content_url = content_url.substring(0,content_url.length()-1);
+                            String type = contentView.getTag().toString().split(";")[1];
+                            Log.d(TAG, content_url);
+                            Log.d(TAG,type);
+                            i.putExtra(CONTENT_URL,content_url );
+                            i.putExtra(TYPE,type);
+                            startActivity(i);
 
 
                         }
+                    });
+                }
+            }
+        };
+                Log.d(TAG, "FirebaseRecyclerAdapter created");
 
+                mAdapter.setHasStableIds(true);
+
+                RecyclerView.ItemAnimator animator = mRecycler.getItemAnimator();
+                if (animator instanceof SimpleItemAnimator) {
+                    ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+                }
+
+                // Scroll to top on new uploads
+                mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                    @Override
+                    public void onItemRangeInserted(int positionStart, int itemCount) {
+                        mManager.smoothScrollToPosition(mRecycler, null, mAdapter.getItemCount());
                     }
+                });
+
+                mRecycler.setAdapter(mAdapter);
+
+
+        return view;
+    }
+
+    // Function for handling favourites
+    private void onHeartClicked(DatabaseReference uploadRef) {
+        uploadRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Spot p = mutableData.getValue(Spot.class);
+                if (p == null) {
+                    return Transaction.success(mutableData);
                 }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
-                    Log.d(TAG, "loadUser:onCancelled", databaseError.toException());
-                    // ...
+                if (p.hearts.containsKey(getUid())) {
+                    // Unlove the upload and remove self from hearts
+                    p.heartCount = p.heartCount - 1;
+                    p.hearts.remove(getUid());
+                } else {
+                    // Love the upload and add self to hearts
+                    p.heartCount = p.heartCount + 1;
+                    p.hearts.put(getUid(), true);
                 }
-            });
 
+                // Set value and report transaction success
+                mutableData.setValue(p);
+                return Transaction.success(mutableData);
+            }
 
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d(TAG, "uploadTransaction:onComplete:" + databaseError);
+            }
+        });
+    }
 
-            return view;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAdapter != null) {
+            mAdapter.cleanup();
         }
+    }
 
-    public void setLatLng(LatLngBounds mLatLngBounds){
+    public void setLatLng(LatLngBounds mLatLngBounds) {
 
 
         /* Initialization of coordinates bounds of the visible regions */
-            if (mLatLngBounds.northeast.latitude < mLatLngBounds.southwest.latitude) {
-                lowLat = mLatLngBounds.northeast.latitude;
-                highLat = mLatLngBounds.southwest.latitude;
-            } else {
-                highLat = mLatLngBounds.northeast.latitude;
-                lowLat = mLatLngBounds.southwest.latitude;
-            }
-            if (mLatLngBounds.northeast.longitude < mLatLngBounds.southwest.longitude) {
-                lowLng = mLatLngBounds.northeast.longitude;
-                highLng = mLatLngBounds.southwest.longitude;
-            } else {
-                highLng = mLatLngBounds.northeast.longitude;
-                lowLng = mLatLngBounds.southwest.longitude;
-            }
+        if (mLatLngBounds.northeast.latitude < mLatLngBounds.southwest.latitude) {
+            lowLat = mLatLngBounds.northeast.latitude;
+            highLat = mLatLngBounds.southwest.latitude;
+        } else {
+            highLat = mLatLngBounds.northeast.latitude;
+            lowLat = mLatLngBounds.southwest.latitude;
+        }
+        if (mLatLngBounds.northeast.longitude < mLatLngBounds.southwest.longitude) {
+            lowLng = mLatLngBounds.northeast.longitude;
+            highLng = mLatLngBounds.southwest.longitude;
+        } else {
+            highLng = mLatLngBounds.northeast.longitude;
+            lowLng = mLatLngBounds.southwest.longitude;
+        }
 
     }
 
-    public void onClick(View view){
+    public void onClick(View view) {
 
-        Spot spot = (Spot)view.getTag();
-        Log.d(TAG, "Spot clicked "+ spot.description);
+        String spot_key = (String) view.getTag();
+
+        Log.d(TAG, spot_key);
 
         VisualizeSpotFragment VisualizeSpotFrag = new VisualizeSpotFragment();
-        VisualizeSpotFrag.setSpot(spot);
+        VisualizeSpotFrag.setSpot(spot_key);
         this.dismiss();
         VisualizeSpotFrag.show(getActivity().getSupportFragmentManager(), VisualizeSpotFrag.getTag());
     }
+
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
+
+
+    public Query getQuery(DatabaseReference databaseReference) {
+
+        return databaseReference.child("spots").orderByChild("Lat").startAt(lowLat).endAt(highLat);
+
+
+    }
+
+
 }
 

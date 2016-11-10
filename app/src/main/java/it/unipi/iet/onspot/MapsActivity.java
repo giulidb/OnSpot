@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -237,7 +236,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     // get category icon id
                     Integer id = getIconId(spot.category);
                     // Marker creation
-                    MarkerItem offsetItem = new MarkerItem(id,spot);
+                    Log.d(TAG,"key: "+dataSnapshot.getKey());
+                    MarkerItem offsetItem = new MarkerItem(id,spot,dataSnapshot.getKey());
                     // Add marker to Cluster Manager
                     mClusterManager.addItem(offsetItem);
 
@@ -253,6 +253,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
+                //TODO: non so se è utile
                 // When a spot was removed from the Database
                 Collection<MarkerItem> items = clusterManagerAlgorithm.getItems();
                 for(MarkerItem m : items){
@@ -393,9 +394,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 break;
             case R.id.list_spot:
                 ListSpotFragment ListFrag = new ListSpotFragment();
+                Log.d(TAG,"List clicked");
                 if(mLatLngBounds != null ){
                 ListFrag.setLatLng(mLatLngBounds);
-                ListFrag.show(getSupportFragmentManager(), ListFrag.getTag());}
+                ListFrag.show(getSupportFragmentManager(), ListFrag.getTag());
+                Log.d(TAG,"Fragment List Created");
+                }
                 break;
             case R.id.plus:
                 AddSpotFrag = new AddSpotFragment();
@@ -792,7 +796,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         Log.d(TAG, "onClusterItemClick Marker Clicked: "+ item.spot.description);
 
         VisualizeSpotFragment VisualizeSpotFrag = new VisualizeSpotFragment();
-        VisualizeSpotFrag.setSpot(item.spot);
+        VisualizeSpotFrag.setSpot(item.spot_key);
         VisualizeSpotFrag.show(getSupportFragmentManager(), VisualizeSpotFrag.getTag());
         return false;
     }

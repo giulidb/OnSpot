@@ -6,10 +6,8 @@ import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +25,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
     private TextView categoryTextView;
     private TextView descriptionView;
     private ImageView contentImageView;
+    private ImageView contentAudVideoView;
     private ImageView userImageView;
     private TextView userTextView;
     private TextView heartTextView;
@@ -41,6 +40,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         categoryTextView = (TextView) itemView.findViewById(R.id.text_category);
         descriptionView = (TextView) itemView.findViewById(R.id.description);
         contentImageView = (ImageView) itemView.findViewById(R.id.image);
+        contentAudVideoView = (ImageView) itemView.findViewById(R.id.image_aud_vid);
         userImageView = (ImageView) itemView.findViewById(R.id.image_user);
         userTextView = (TextView) itemView.findViewById(R.id.text_user);
         heartTextView = (TextView) itemView.findViewById(R.id.heart_number);
@@ -57,7 +57,6 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         categoryImageView.setImageResource(categoryResource(upload.category));
 
         // Center content layout
-        //TODO: fare in modo che funzioni anche con video e audio
         handleContent(upload, mediaClickListener);
         descriptionView.setText(upload.description);
 
@@ -68,7 +67,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
     }
 
     // Function that returns the category icon correspondent to a certain category name
-    public int categoryResource(String category) {
+    private int categoryResource(String category) {
         final String [] categories = context.getResources().getStringArray(R.array.categories_names);
         final TypedArray icons = context.getResources().obtainTypedArray(R.array.categories_icons);
         for(int i=0; i<categories.length; i++) {
@@ -78,30 +77,43 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         return R.drawable.dots;
     }
 
-    public void handleContent(Spot upload, View.OnClickListener mediaClickListener) {
+    private void handleContent(Spot upload, View.OnClickListener mediaClickListener) {
         switch(upload.Type) {
             case "image":
                 Picasso.with(context).load(upload.contentURL).into(contentImageView);
+                contentImageView.setTag(upload.contentURL +";"+upload.Type);
+                contentImageView.setOnClickListener(mediaClickListener);
+                contentAudVideoView.setVisibility(View.INVISIBLE);
+                contentImageView.setVisibility(View.VISIBLE);
+
                 break;
             case "video":
-                //TODO: fare in modo che sia decente
-                contentImageView.setImageResource(R.drawable.video_big);
-                contentImageView.setBackgroundColor(Color.parseColor("#C45852"));
+                contentAudVideoView.setVisibility(View.VISIBLE);
+                contentImageView.setVisibility(View.INVISIBLE);
+                contentAudVideoView.setImageResource(R.drawable.video_big);
+                contentAudVideoView.setBackgroundColor(Color.parseColor("#C45852"));
+                contentAudVideoView.setTag(upload.contentURL +";"+upload.Type);
+                contentAudVideoView.setOnClickListener(mediaClickListener);
+                contentAudVideoView.setPadding(150,60,150,60);
+
 
                 break;
             case "audio":
-                //TODO: fare in modo che sia decente
-                contentImageView.setImageResource(R.drawable.volume);
-                contentImageView.setBackgroundColor(Color.parseColor("#C45852"));
+                contentAudVideoView.setVisibility(View.VISIBLE);
+                contentImageView.setVisibility(View.INVISIBLE);
+                contentAudVideoView.setImageResource(R.drawable.volume);
+                contentAudVideoView.setBackgroundColor(Color.parseColor("#C45852"));
+                contentAudVideoView.setTag(upload.contentURL +";"+upload.Type);
+                contentAudVideoView.setOnClickListener(mediaClickListener);
+                contentAudVideoView.setPadding(150,60,150,60);
                 break;
         }
 
-        contentImageView.setTag(upload.contentURL +";"+upload.Type);
-        contentImageView.setOnClickListener(mediaClickListener);
+
 
     }
 
-    public void loadProfile(Spot spot) {
+    private void loadProfile(Spot spot) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference newRef = mDatabase.child("users").child(spot.userId);
         newRef.addValueEventListener( new ValueEventListener() {

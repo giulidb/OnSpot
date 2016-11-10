@@ -58,5 +58,7 @@
     <!-- String for MyProfileActivity -->
     <string name="heading_liked">Favourites</string>
     <string name="heading_my_images">My Spots</string>
+    <string name="age">Age: </string>
+
 
 </resources>

@@ -110,7 +110,6 @@ public abstract class ImageListFragment extends Fragment {
                         Log.d(TAG,"click on View "+ contentView.getTag());
 
                         // Start MediaStreamer to Reproduce Media
-                        //TODO: vedere se può andare anche per le immagini
                         Intent i = new Intent(getActivity(), MediaStreamer.class);
                         String content_url = contentView.getTag().toString().split(";")[0];
                         content_url = content_url.substring(0,content_url.length()-1);
@@ -157,11 +156,11 @@ public abstract class ImageListFragment extends Fragment {
                 }
 
                 if (p.hearts.containsKey(getUid())) {
-                    // Unstar the upload and remove self from stars
+                    // Unlove the upload and remove self from hearts
                     p.heartCount = p.heartCount - 1;
                     p.hearts.remove(getUid());
                 } else {
-                    // Star the upload and add self to stars
+                    // Love the upload and add self to hearts
                     p.heartCount = p.heartCount + 1;
                     p.hearts.put(getUid(), true);
                 }
