@@ -1,6 +1,7 @@
 package it.unipi.iet.onspot;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Build;
@@ -163,7 +166,35 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             // if user is already logged changes activity
             Log.d(TAG,"User already logged");}
 
+        }
+
+    @Override
+    public void onResume(){
+
+        super.onResume();
+        /* Check connection */
+        if (isOnline())
+        {
+            Log.d(TAG, "Connection True");
+        }else{
+            Log.d(TAG, "Connection False");
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+            alertDialog.setTitle("Network Settings");
+            alertDialog.setMessage("Internet not available, Cross check your internet connectivity and try again");
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,"Ok ",new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    moveTaskToBack(true);
+
+                }
+            });
+
+            alertDialog.show();
+        }
+
     }
+
+
 
     @Override
     public void onStart() {
@@ -587,73 +618,85 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-        // Retrieve description and category
-        final AddSpotFragment fragment = retrieveFragment();
-        description = fragment.getDescription();
-        category = fragment.getCategory();
-        title = fragment.getTitle();
-        Log.d(TAG,"Path to media file is"+path);
+        if(mLastLocation == null){
 
-        //Check if there is something missing in the fields
-        if(!formIsValid())
-            return;
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
-        showProgressDialog();
+            alertDialog.setTitle("GPS Settings");
+            alertDialog.setMessage("Enable GPS for adding a new spot! ");
+            alertDialog.show();
 
-        //Retrieve userId
-        String userId = AuthUt.getUser().getUid();
 
-        //Start the task to save spot multimedia content in the storage
-        StorageReference storageRef = FirebaseStorage.getInstance()
-                                        .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
-        Uri file = Uri.fromFile(new File(path));
+        }
 
-        StorageReference childRef = storageRef.child(userId+"/"+file.getLastPathSegment());
-        Log.d(TAG,"File Storage Reference: "+ childRef.getPath());
-        UploadTask uploadTask = childRef.putFile(file);
-        uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // Upload succeeded
-                Log.d(TAG, "Entered in onSuccess");
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                String contentURL = null;
-                if (downloadUrl != null) {
-                    contentURL = downloadUrl.toString();
+        else {
+            // Retrieve description and category
+            final AddSpotFragment fragment = retrieveFragment();
+            description = fragment.getDescription();
+            category = fragment.getCategory();
+            title = fragment.getTitle();
+            Log.d(TAG, "Path to media file is" + path);
+
+            //Check if there is something missing in the fields
+            if (!formIsValid())
+                return;
+
+            showProgressDialog();
+
+            //Retrieve userId
+            String userId = AuthUt.getUser().getUid();
+
+            //Start the task to save spot multimedia content in the storage
+            StorageReference storageRef = FirebaseStorage.getInstance()
+                    .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
+            Uri file = Uri.fromFile(new File(path));
+
+            StorageReference childRef = storageRef.child(userId + "/" + file.getLastPathSegment());
+            Log.d(TAG, "File Storage Reference: " + childRef.getPath());
+            UploadTask uploadTask = childRef.putFile(file);
+            uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Upload succeeded
+                    Log.d(TAG, "Entered in onSuccess");
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    String contentURL = null;
+                    if (downloadUrl != null) {
+                        contentURL = downloadUrl.toString();
+                    }
+                    saveSpotOnDatabase(contentURL);
+                    hideProgressDialog();
+                    fragment.dismiss();
+
+                    Toast.makeText(MapsActivity.this, "Spot saved correctly",
+                            Toast.LENGTH_SHORT).show();
                 }
-                saveSpotOnDatabase(contentURL);
-                hideProgressDialog();
-                fragment.dismiss();
+            }).addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Upload failed
+                    Log.w(TAG, "Entered in onFailure", exception);
+                    hideProgressDialog();
+                    Toast.makeText(MapsActivity.this, "Error: upload failed",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
 
-                Toast.makeText(MapsActivity.this, "Spot saved correctly",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Upload failed
-                Log.w(TAG, "Entered in onFailure", exception);
-                hideProgressDialog();
-                Toast.makeText(MapsActivity.this, "Error: upload failed",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Observe state change events such as progress, pause, and resume
-        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                Log.d(TAG,"Upload is " + progress + "% done");
-                setmProgressDialog((int)progress);
-            }
-        }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG,"Upload is paused");
-            }
-        });
-
+            // Observe state change events such as progress, pause, and resume
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    Log.d(TAG, "Upload is " + progress + "% done");
+                    setmProgressDialog((int) progress);
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "Upload is paused");
+                }
+            });
+        }
 
     }
 
@@ -701,7 +744,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             double Lng = mLastLocation.getLongitude();
             //Save spot info in the db
             DatabaseUtilities db = new DatabaseUtilities();
-            db.writeNewSpot(userId, description, title,category, contentURL, Lat, Lng, currentTime,type);
+            db.writeNewSpot(userId, description, title, category, contentURL, Lat, Lng, currentTime, type);
 
 
     }
@@ -801,7 +844,17 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         return false;
     }
 
+    /* Function to check Internet connection */
+    public boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
 
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
 
 
     /*
@@ -903,6 +956,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
         }
     }
+
 
 
 

@@ -10,6 +10,7 @@
     android:theme="@style/AppTheme"
     tools:context=".MapsActivity">
 
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +21,9 @@
         android:textSize="18sp"
         android:padding="10dp"
         android:id="@+id/spot" />
-
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <ImageView
         android:layout_height="150dp"
         android:layout_width="150dp"
@@ -122,5 +125,6 @@
 
     </LinearLayout>
 
+    </ScrollView>
 
 </RelativeLayout>
