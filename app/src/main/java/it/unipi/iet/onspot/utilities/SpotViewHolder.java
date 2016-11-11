@@ -3,10 +3,12 @@ package it.unipi.iet.onspot.utilities;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +32,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
     private TextView userTextView;
     private TextView heartTextView;
     public ImageView heartImageView;
+    private CardView containerLayout;
     private Context context;
 
     public SpotViewHolder(View itemView) {
@@ -45,6 +48,7 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
         userTextView = (TextView) itemView.findViewById(R.id.text_user);
         heartTextView = (TextView) itemView.findViewById(R.id.heart_number);
         heartImageView = (ImageView) itemView.findViewById(R.id.heart_image);
+        containerLayout = (CardView) itemView.findViewById(R.id.container_layout);
     }
 
     public void bindToUpload(Context cont, Spot upload, View.OnClickListener heartClickListener,
@@ -136,5 +140,9 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
                 // ...
             }
         });
+    }
+
+    public void removeView() {
+        containerLayout.setVisibility(View.GONE);
     }
 }

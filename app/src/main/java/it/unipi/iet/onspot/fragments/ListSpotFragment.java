@@ -24,6 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
+
 import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.Spot;
@@ -147,17 +149,18 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
                             // Start MediaStreamer to Reproduce Media
                             Intent i = new Intent(getActivity(), MediaStreamer.class);
                             String content_url = contentView.getTag().toString().split(";")[0];
-                            content_url = content_url.substring(0,content_url.length()-1);
+                            content_url = content_url.substring(0, content_url.length() - 1);
                             String type = contentView.getTag().toString().split(";")[1];
                             Log.d(TAG, content_url);
-                            Log.d(TAG,type);
-                            i.putExtra(CONTENT_URL,content_url );
-                            i.putExtra(TYPE,type);
+                            Log.d(TAG, type);
+                            i.putExtra(CONTENT_URL, content_url);
+                            i.putExtra(TYPE, type);
                             startActivity(i);
-
 
                         }
                     });
+                } else {
+                    viewHolder.removeView();
                 }
             }
         };
@@ -266,9 +269,26 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
 
     public Query getQuery(DatabaseReference databaseReference) {
 
-        return databaseReference.child("spots").orderByChild("Lat").startAt(lowLat).endAt(highLat);
+        Query listQuery = databaseReference.child("spots").orderByChild("Lat").startAt(lowLat).endAt(highLat);
+        /*listQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot spotSnapshot : dataSnapshot.getChildren()) {
+                    double Long = (double)spotSnapshot.child("Lat").getValue();
+                    Query k = listQuery.orderByChild("Lng").startAt(lowLng).endAt(highLng);
+                    if (Long>lowLng && Long<highLng) {
+                        String key = spotSnapshot.getKey();
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
 
+            }
+        });*/
+
+        return listQuery;
     }
 
 
