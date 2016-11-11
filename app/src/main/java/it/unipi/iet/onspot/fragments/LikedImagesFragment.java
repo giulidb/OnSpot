@@ -6,16 +6,14 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-public class LikedImagesFragment extends ImageListFragment {
-    public LikedImagesFragment() {}
 
-    //TODO: change query
+public class LikedImagesFragment extends ImageListFragment {
+
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
         Log.d("ImageListFragment","Query for favourite images");
         String myUserId = getUid();
-        Query favQuery = databaseReference.child("spots").orderByChild("hearts").equalTo(myUserId);
-
-        return favQuery ;
+        Query favQuery = databaseReference.child("spots").orderByChild("hearts/"+myUserId).equalTo(true);
+        return favQuery;
     }
 }
