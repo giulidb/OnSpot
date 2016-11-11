@@ -2,7 +2,7 @@
     <string name="app_name">OnSpot</string>
     <string name="option_logout">Logout</string>
     <string name="modify_profile">Modify profile</string>
-    <string name="info">Info</string>
+    <string name="info">Info&amp;Credits</string>
     <string name="image">Image</string>
 
     <!-- Strings related to login -->
@@ -60,9 +60,22 @@
     <string name="heading_my_images">My Spots</string>
     <string name="age">Age: </string>
 
+    <!-- String for InfoActivity -->
+    <string name="credits">Credits</string>
+    <string name="MapsIconCollection">  Maps Icons Collection</string>
+    <string name="about_onSpot">On Spot is app that allows users to submit and view
+        sightings in an easy interface with GEO coordinates, picture, video and further information. \n
+        OnSpot creates a community of people sharing experiences like food, nightlife, shows,
+        outdoor activities, travel tips and more. \n \n
+        How OnSpot Works:\n
+        &#8226; Select Your Interests –- Easily and quickly choose from N interest categories to find the best experiences possible for you. \n
+        &#8226; Explore What People Recommend –- Scroll through a feed of amazing new experiences or explore your city on a map. \n
+        &#8226; Recommend An Experience – Share what you want by posting a video, photo or audio along with a short description. \n
+    </string>
+
+
     <!-- Facebook App ID -->
     <string name="facebook_app_id">690703731088483</string>
-
 
 
 </resources>

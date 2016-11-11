@@ -25,16 +25,24 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import it.unipi.iet.onspot.utilities.AuthUtilities;
+import it.unipi.iet.onspot.utilities.CircleTransform;
 import it.unipi.iet.onspot.utilities.DatabaseUtilities;
 import it.unipi.iet.onspot.utilities.MultimediaUtilities;
 import it.unipi.iet.onspot.utilities.PermissionUtilities;
+import it.unipi.iet.onspot.utilities.User;
 
 
 public class ProfileActivity extends BaseActivity implements View.OnClickListener{
@@ -44,11 +52,15 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
     private EditText gender;
     private EditText firstName;
     private EditText lastName;
+    private ImageView profile_photo;
     private AlertDialog.Builder builder;
     private Uri photo_uri = null;
     private AlertDialog dialog;
-    private String TAG = "ProfileActivity";
     private AuthUtilities AuthUt;
+
+    /* Constants */
+    private String TAG = "ProfileActivity";
+    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     private int PERMISSION_REQUEST_CODE = 1;
 
     private String path;
@@ -72,8 +84,9 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         lastName = (EditText)findViewById(R.id.lastName);
         birthday = (EditText)findViewById(R.id.birthday);
         gender = (EditText)findViewById(R.id.gender);
-        Button butt = (Button)findViewById(R.id.join);
+        final Button butt = (Button)findViewById(R.id.join);
         ImageView edit_photo = (ImageView)findViewById(R.id.edit_photo);
+        profile_photo = (ImageView)findViewById(R.id.imageProfile);
 
         // Set views clickable
         birthday.setOnClickListener(this);
@@ -83,6 +96,41 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
 
         //Authentication
         AuthUt = new AuthUtilities();
+
+        //Check if user have already some info saved
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference newRef = mDatabase.child("users").child(AuthUt.get_mAuth().getCurrentUser().getUid());
+        newRef.addValueEventListener( new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot dataSnapshot) {
+                 User user = dataSnapshot.getValue(User.class);
+                 firstName.setText(user.firstName);
+                 lastName.setText(user.lastName);
+                 birthday.setText(user.birthday);
+                 gender.setText(user.gender);
+                 butt.setText("Save");
+
+                 // to manage photo profile
+                 profile_photo.setTag(user.photoURL);
+
+
+                 // If user does not have an image it loads a default one
+                 if(user.photoURL != null )
+                     Picasso.with(ProfileActivity.this).load(user.photoURL).transform(new CircleTransform()).into(profile_photo);
+                 else
+                     Picasso.with(ProfileActivity.this).load("https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png").transform(new CircleTransform()).into(profile_photo);
+
+                 // save Photo URL to check if it will be changed.
+                 profile_photo.setTag(user.photoURL);
+             }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.d(TAG, "loadUser:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
 
     }
 
@@ -193,6 +241,8 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                     if (downloadUrl != null) {
                         contentURL = downloadUrl.toString();
                     }
+
+                    // save user with the new photo url
                     saveUserOnDatabase(contentURL);
                     hideProgressDialog();
 
@@ -224,6 +274,13 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                     Log.d(TAG, "Upload is paused");
                 }
             });
+        }
+
+        else{
+
+            // Take photo url old if exist or null otherwise
+            saveUserOnDatabase(profile_photo.getTag().toString());
+
         }
     }
 
@@ -326,8 +383,13 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
 @Override
     public void onBackPressed() {
         // disable going back to the SignUpActivity
+    Intent intent = getIntent();
+    String action = intent.getStringExtra(ACTIVITY);
+    if(action.equals("LoginActivity"))
         moveTaskToBack(true);
-    }
+    else if(action.equals("myProfileActivity") || action.equals("MapsActivity"))
+        finish();
+}
 
     @Override
     public void onStart() {

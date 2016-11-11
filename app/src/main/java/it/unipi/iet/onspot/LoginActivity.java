@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button Login;
     private ProgressDialog progressDialog;
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
+    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     private String TAG = "LoginActivity";
 
 
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG,"New User Created");
                             // After user creation redirect user to ProfileActivity to insert basic info
                             Intent i = new Intent(LoginActivity.this,ProfileActivity.class);
+                            i.putExtra(ACTIVITY,"LoginActivity");
                             startActivity(i);
                        }
 

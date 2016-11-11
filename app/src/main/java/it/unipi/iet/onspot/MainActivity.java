@@ -84,9 +84,6 @@ public class MainActivity extends Activity{
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
 
-                // start MapsActivity
-                Intent i = new Intent(MainActivity.this,MapsActivity.class);
-                startActivity(i);
             }
 
             @Override
@@ -178,6 +175,10 @@ public class MainActivity extends Activity{
                         Log.d(TAG,"url "+user.getPhotoUrl());
                         DatabaseUtilities db = new DatabaseUtilities();
                         db.writeNewUser(user.getUid(),user.getDisplayName(),null,user.getPhotoUrl().toString(),null, null);
+                        Log.d(TAG,"Fb user created");
+                        // start MapsActivity
+                        Intent i = new Intent(MainActivity.this,MapsActivity.class);
+                        startActivity(i);
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.

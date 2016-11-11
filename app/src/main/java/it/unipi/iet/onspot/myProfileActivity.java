@@ -9,8 +9,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 import java.util.Calendar;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
@@ -29,7 +34,8 @@ public class myProfileActivity extends AppCompatActivity {
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
 
-    private String TAG = "myProfileActivity";
+    private final String TAG = "myProfileActivity";
+    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
 
 
     @Override
@@ -129,6 +135,47 @@ public class myProfileActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         AuthUt.removeListener();
+    }
+
+    /*
+     * Menu functions
+     */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Intent i;
+        switch (id) {
+            case R.id.logout:
+                //logout
+                AuthUt.signOut();
+                LoginManager.getInstance().logOut();
+                i = new Intent(myProfileActivity.this,MainActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.modify:
+                // modify profile
+                i= new Intent(myProfileActivity.this, ProfileActivity.class);
+                i.putExtra(ACTIVITY,"myProfileActivity");
+                startActivity(i);
+                break;
+
+            case R.id.info:
+                i= new Intent(myProfileActivity.this, InfoActivity.class);
+                startActivity(i);
+                break;
+
+
+        }
+        return false;
     }
 
 }

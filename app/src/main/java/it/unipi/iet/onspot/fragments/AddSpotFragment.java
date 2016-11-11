@@ -61,7 +61,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
 
         if( behavior != null && behavior instanceof BottomSheetBehavior ) {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
-
         }
 
     }
@@ -77,7 +76,6 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
         category = (EditText) view.findViewById(R.id.category);
         description = (EditText) view.findViewById(R.id.description);
         title = (EditText) view.findViewById(R.id.title);
-
 
         return view;
     }

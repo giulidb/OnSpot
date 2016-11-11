@@ -130,6 +130,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     private final String TAG = "MapsActivity";
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
+    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     public final long MAX_SIZE = 16777216;
 
 
@@ -409,13 +410,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Intent i;
         switch (id) {
             case R.id.logout:
                 //logout
                 AuthUt.signOut();
                 LoginManager.getInstance().logOut();
-                Intent i = new Intent(MapsActivity.this,MainActivity.class);
+                i = new Intent(MapsActivity.this,MainActivity.class);
                 startActivity(i);
+                break;
+
+            case R.id.modify:
+                // modify profile
+                i= new Intent(MapsActivity.this, ProfileActivity.class);
+                i.putExtra(ACTIVITY,"MapsActivity");
+                startActivity(i);
+                break;
+
+            case R.id.info:
+                i= new Intent(MapsActivity.this, InfoActivity.class);
+                startActivity(i);
+                break;
 
         }
         return false;
