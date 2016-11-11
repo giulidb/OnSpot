@@ -85,7 +85,6 @@ public class myProfileActivity extends AppCompatActivity {
         }
 
         Log.d(TAG, "ViewPager created");
-
     }
 
     public void setUserInfo(User user){
@@ -95,16 +94,27 @@ public class myProfileActivity extends AppCompatActivity {
         TextView Gender = (TextView)findViewById(R.id.sex);
         ImageView profile_photo = (ImageView) findViewById(R.id.photoProfile);
 
+        // Check fields is necessary because someone could be null if user is logged with fb
+        if(user.firstName!=null && user.lastName !=null){
+            Name.setText(user.firstName + " " + user.lastName);}
+        else
+            Name.setText(user.firstName);
 
-        Name.setText(user.firstName + " " + user.lastName);
-        Gender.setText(user.gender);
+        if(user.gender != null)
+            Gender.setText(user.gender);
 
-        Calendar today = Calendar.getInstance();
-        int year = Integer.parseInt(user.birthday.substring(user.birthday.length()-4));
-        int age = today.get(Calendar.YEAR) - year ;
-        Age.setText("@string/age" + age);
+        if(user.birthday != null){
+            Calendar today = Calendar.getInstance();
+            int year = Integer.parseInt(user.birthday.substring(user.birthday.length()-4));
+            int age = today.get(Calendar.YEAR) - year ;
+            Age.setText("Age: "+age);}
 
-        Picasso.with(this).load(user.photoURL).transform(new CircleTransform()).into(profile_photo);
+        // If user does not have an image it loads a default one
+        if(user.photoURL != null )
+            Picasso.with(this).load(user.photoURL).transform(new CircleTransform()).into(profile_photo);
+        else
+            Picasso.with(this).load("https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png").transform(new CircleTransform()).into(profile_photo);
+
 
 
     }

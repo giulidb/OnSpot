@@ -60,5 +60,9 @@
     <string name="heading_my_images">My Spots</string>
     <string name="age">Age: </string>
 
+    <!-- Facebook App ID -->
+    <string name="facebook_app_id">690703731088483</string>
+
+
 
 </resources>

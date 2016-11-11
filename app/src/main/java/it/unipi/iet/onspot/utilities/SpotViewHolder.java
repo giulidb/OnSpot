@@ -122,7 +122,12 @@ public class SpotViewHolder extends RecyclerView.ViewHolder {
                 // Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 userTextView.setText(user.firstName);
-                Picasso.with(context).load(user.photoURL).transform(new CircleTransform()).into(userImageView);
+                if(user.photoURL != null )
+                    Picasso.with(context).load(user.photoURL).transform(new CircleTransform()).into(userImageView);
+                else
+                    Picasso.with(context).load("https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png")
+                            .transform(new CircleTransform()).into(userImageView);
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

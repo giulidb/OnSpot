@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background"
     tools:context="it.unipi.iet.onspot.MainActivity">
 
@@ -14,7 +15,7 @@
         android:layout_marginTop="125dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/logo1"/>
+        android:src="@drawable/logo1_small"/>
 
     <RelativeLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,34 +31,35 @@
         android:layout_marginTop="121dp"
         android:layout_alignStart="@+id/button2"
         android:layout_alignEnd="@+id/button2"
-        android:paddingStart="80dp"
-        android:paddingEnd="80dp"
-        android:textAlignment="textStart"/>
+        android:paddingStart="4dp"
+        />
 
         <Button android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/action_sign_up"
         android:drawableStart="@drawable/email"
+        android:paddingStart="4dp"
         android:background="@color/colorPrimary"
         android:id="@+id/button2"
         android:layout_below="@+id/button"
         android:layout_alignStart="@+id/button3"
         android:layout_alignEnd="@+id/button3"
-        android:paddingStart="80dp"
-        android:paddingEnd="80dp"
-        android:textAlignment="textStart"/>
+            android:gravity="center" />
 
-        <Button android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/action_facebook"
-        android:drawableStart="@drawable/facebook"
-        android:background="#3b5998"
-        android:id="@+id/button3"
-        android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:paddingStart="80dp"
-        android:paddingEnd="10dp"
-        android:textAlignment="textStart" />
+        <com.facebook.login.widget.LoginButton
+            xmlns:facebook="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button3"
+            android:foregroundGravity="center_horizontal"
+            android:layout_below="@+id/button2"
+            facebook:com_facebook_login_text="Connect with facebook"
+            facebook:com_facebook_logout_text="Connect with facebook"
+            android:fontFamily="sans-serif-light"
+            android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            tools:drawablePadding="4dp" />
 
         <Button android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,9 +70,9 @@
         android:layout_below="@+id/button3"
         android:layout_alignStart="@+id/button3"
         android:layout_alignEnd="@+id/button3"
-        android:paddingStart="80dp"
-        android:paddingEnd="80dp"
-        android:textAlignment="textStart"/>
+         android:layout_centerInParent="true"
+        android:paddingStart="4dp"
+       />
 
 
     </RelativeLayout>

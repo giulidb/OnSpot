@@ -27,6 +27,7 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+
     <!-- Alert Dialog Box Style -->
     <style name="AppDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowFrame">@null</item>

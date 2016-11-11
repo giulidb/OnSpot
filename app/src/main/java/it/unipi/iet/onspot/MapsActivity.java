@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,6 +48,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -126,7 +128,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     //Search variables
     private SearchFragment SearchFrag;
 
-    String TAG = "MapsActivity";
+    private final String TAG = "MapsActivity";
+    public static final String SIGN = "it.unipi.iet.onspot.SIGN";
+
 
 
     /*
@@ -408,6 +412,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             case R.id.logout:
                 //logout
                 AuthUt.signOut();
+                LoginManager.getInstance().logOut();
                 Intent i = new Intent(MapsActivity.this,MainActivity.class);
                 startActivity(i);
 
@@ -418,7 +423,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     // onClick for toolbar
     public void toolbarOnClick(View view){
 
+        boolean anonymous = isAnonymous(AuthUt.get_mAuth().getCurrentUser());
+
         switch(view.getId()){
+
+
             case R.id.search_icon:
                 SearchFrag = new SearchFragment();
                 SearchFrag.show(getSupportFragmentManager(), SearchFrag.getTag());
@@ -433,17 +442,26 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 }
                 break;
             case R.id.plus:
-                AddSpotFrag = new AddSpotFragment();
-                AddSpotFrag.show(getSupportFragmentManager(), AddSpotFrag.getTag());
+                if(!anonymous){
+                    AddSpotFrag = new AddSpotFragment();
+                    AddSpotFrag.show(getSupportFragmentManager(), AddSpotFrag.getTag());}
+                else
+                    alert_user();
                 break;
             case R.id.account:
-                Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
-                startActivity(i);
+                if(!anonymous){
+                    Intent i = new Intent(MapsActivity.this,myProfileActivity.class);
+                    startActivity(i);}
+                else
+                    alert_user();
                 break;
             case R.id.heart:
+                if(!anonymous){
                 Intent j = new Intent(MapsActivity.this,myProfileActivity.class);
                 j.putExtra("extra","heart");
-                startActivity(j);
+                startActivity(j);}
+                else
+                    alert_user();
                 break;
         }
     }
@@ -855,6 +873,51 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
         return true;
     }
+
+    /*
+     * Functions to handle anonymous users
+     */
+
+    // Function to check if user is anonymous
+    private boolean isAnonymous(FirebaseUser user){
+
+        if(user.getEmail() == null)
+            return true;
+        else
+            return false;
+    }
+
+    // Show alert dialog if anonymous user want to access to registered-user-only's areas
+    public void alert_user(){
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        alertDialog.setTitle("Anonymous User");
+        alertDialog.setMessage("This function is enable only for non-anonymous-user. Would you join us?");
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,"Yes ",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                // if user click on Yes, he is redirected to the sign-up Activity
+                Log.d(TAG,"User clicked Yes");
+                Intent i = new Intent(MapsActivity.this,LoginActivity.class);
+                i.putExtra(SIGN,"sign-up");
+                //logout from anonymous user
+                AuthUt.signOut();
+                startActivity(i);
+
+            }
+        });
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,"No ",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                Log.d(TAG,"User clicked No");
+
+            }
+        });
+        alertDialog.show();
+
+    }
+
 
 
     /*

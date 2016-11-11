@@ -34,6 +34,9 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
@@ -70,6 +73,13 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".BaseActivity" />
         <activity android:name=".MediaStreamer"></activity>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@style/com_facebook_activity_theme"
+            android:label="@string/app_name" />
+
     </application>
 
 </manifest>

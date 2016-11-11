@@ -25,11 +25,13 @@ public class LoginActivity extends AppCompatActivity {
 
     // auth and auth state listener declaration
     private AuthUtilities AuthUt;
-    private String TAG = "LoginActivity";
     private  EditText emailField;
     private EditText passwordField;
     private Button Login;
     private ProgressDialog progressDialog;
+    public static final String SIGN = "it.unipi.iet.onspot.SIGN";
+    private String TAG = "LoginActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +119,8 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
+                        Log.d(TAG,"User Provider: "+ AuthUt.get_mAuth().getCurrentUser().getProviderId());
+
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
@@ -141,12 +145,12 @@ public class LoginActivity extends AppCompatActivity {
        passwordField = (EditText)findViewById(R.id.password);
 
         Intent intent = getIntent();
-        String butt = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        String action = intent.getStringExtra(SIGN);
 
         // if sign_in or sign up button was clicked
-        if(butt.equals("button")){
+        if(action.equals("sign-in")){
             sign_in(emailField.getText().toString(),passwordField.getText().toString());
-        } else if(butt.equals("button2")){
+        } else if(action.equals("sign-up")){
             create_new_account(emailField.getText().toString(),passwordField.getText().toString());
         }
     }

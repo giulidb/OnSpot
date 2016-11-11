@@ -260,7 +260,10 @@ public  class VisualizeSpotFragment extends BottomSheetDialogFragment {
                 User user = dataSnapshot.getValue(User.class);
                 Log.d(TAG,"User: "+ user.firstName);
                 user_name.setText(user.firstName);
-                Picasso.with(getActivity()).load(user.photoURL).transform(new CircleTransform()).into(user_photo);
+                if(user.photoURL != null)
+                    Picasso.with(getActivity()).load(user.photoURL).transform(new CircleTransform()).into(user_photo);
+                else
+                    Picasso.with(getActivity()).load("https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png").transform(new CircleTransform()).into(user_photo);
 
 
             }

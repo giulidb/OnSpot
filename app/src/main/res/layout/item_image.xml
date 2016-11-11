@@ -67,7 +67,7 @@
             android:contentDescription="@string/image"
             android:layout_height="160dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:layout_below="@id/title_layout"/>
 
         <ImageView

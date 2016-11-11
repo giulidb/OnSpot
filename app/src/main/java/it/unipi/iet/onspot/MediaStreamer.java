@@ -3,6 +3,7 @@ package it.unipi.iet.onspot;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -29,6 +30,7 @@ public class MediaStreamer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_streamer);
 
+        ImageView imageView = (ImageView) findViewById(R.id.myImage);
         // Retrieve File URL from intent
         url = getIntent().getStringExtra(CONTENT_URL);
 
@@ -45,14 +47,21 @@ public class MediaStreamer extends AppCompatActivity {
         vidControl.setAnchorView(vidView);
         vidView.setMediaController(vidControl);
 
+       if((getIntent().getStringExtra(TYPE).equals("video"))){
+          imageView.setVisibility(View.INVISIBLE);}
+       else{
+           imageView.setVisibility(View.VISIBLE);}
+
+
+
         vidView.start();
 
         }
         else{
 
           // visualize image in full screen
-            ImageView imageView = (ImageView) findViewById(R.id.myImage);
-            Picasso.with(this).load(url).into(imageView);
+          imageView.setVisibility(View.VISIBLE);
+          Picasso.with(this).load(url).into(imageView);
 
         }
 

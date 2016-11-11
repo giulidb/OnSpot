@@ -167,12 +167,14 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         AuthUt.updateUserProfile(Name + " " + Surname,uri);
         Log.d(TAG,"Profile updated: "+ AuthUt.getDisplayName());
 
-        showProgressDialog();
 
         //Retrieve userId
         String userId = AuthUt.getUser().getUid();
 
         if(path != null ) {
+
+            showProgressDialog();
+
             //Start the task to save spot multimedia content in the storage
             StorageReference storageRef = FirebaseStorage.getInstance()
                     .getReferenceFromUrl("gs://onspot-8c6f4.appspot.com/");
