@@ -15,7 +15,7 @@ import android.widget.EditText;
 
 import it.unipi.iet.onspot.R;
 
-//TODO: vedere se cambiando il layout si può rendere più guardabile
+
 public class SearchFragment extends DialogFragment {
 
     private EditText locationSearch;

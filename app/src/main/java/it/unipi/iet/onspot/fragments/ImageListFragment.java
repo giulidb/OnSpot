@@ -191,5 +191,6 @@ public abstract class ImageListFragment extends Fragment {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-    public abstract Query getQuery(DatabaseReference databaseReference);
+    public abstract Query getQuery(DatabaseReference databaseReference) ;
+
 }
