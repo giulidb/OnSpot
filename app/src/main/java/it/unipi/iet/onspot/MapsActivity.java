@@ -130,6 +130,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     private final String TAG = "MapsActivity";
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
+    public final long MAX_SIZE = 16777216;
 
 
 
@@ -550,51 +551,66 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     Uri uri = data.getData();
                     // Get the actual path
                     path = MultimediaUtilities.getRealPathFromURI(this,uri);
+
+                    // get File Size in bytes
+                    File f = new File(path);
+                    long fileSize = f.length();
+                    Log.d(TAG, "File size in bytes: "+ fileSize);
                     Bitmap bm = null;
 
-                    switch(requestCode){
-                        case IMAGE_REQUEST_CODE:
-                            try {
-                                bm = MediaStore.Images.Media.getBitmap(getApplicationContext()
-                                        .getContentResolver(), data.getData());
-                                } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Log.d(TAG,"Path of bitmap= "+ path);
-                            // Get right orientation of the image
-                            bm = MultimediaUtilities.rotateBitmap(bm,path);
-                            // Resize image
-                            //TODO: decidere se va bene la max size
-                            bm = MultimediaUtilities.resize(bm,180,180);
-                            //save file type
-                            type = "image";
-                            // Set image as preview in fragment
-                            fragment.set_preview(bm);
-                            break;
+                    if(fileSize > MAX_SIZE ){
 
-                        case AUDIO_REQUEST_CODE:
-                            //save file type
-                            type = "audio";
-                            fragment.add_audio_button();
-                            break;
+                        Toast.makeText(this, "Error: maximum file size is 16MB", Toast.LENGTH_LONG).show();
+                        path = null;
 
-                        case VIDEO_REQUEST_CODE:
-
-                            Log.d(TAG,"Path of video= "+ path);
-                            // extract frame from video
-                            MediaMetadataRetriever mRetriever = new MediaMetadataRetriever();
-                            mRetriever.setDataSource(path);
-                            bm = (mRetriever.getFrameAtTime(0));
-                            bm = MultimediaUtilities.resize(bm,180,180);
-                            //save file type
-                            type = "video";
-                            // Set image as preview in fragment
-                            fragment.set_preview(bm);
-                            // Add play button to reproduce video if clicked
-                            fragment.add_play_button();
                     }
 
+                    else {
 
+                        switch (requestCode) {
+                            case IMAGE_REQUEST_CODE:
+                                try {
+                                    bm = MediaStore.Images.Media.getBitmap(getApplicationContext()
+                                            .getContentResolver(), data.getData());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d(TAG, "Path of bitmap= " + path);
+
+                                // Get right orientation of the image
+                                bm = MultimediaUtilities.rotateBitmap(bm, path);
+                                // Resize image
+                                //TODO: decidere se va bene la max size
+                                bm = MultimediaUtilities.resize(bm, 180, 180);
+                                //save file type
+                                type = "image";
+                                // Set image as preview in fragment
+                                fragment.set_preview(bm);
+                                break;
+
+                            case AUDIO_REQUEST_CODE:
+                                //save file type
+                                type = "audio";
+                                fragment.add_audio_button();
+                                break;
+
+                            case VIDEO_REQUEST_CODE:
+
+                                Log.d(TAG, "Path of video= " + path);
+                                // extract frame from video
+                                MediaMetadataRetriever mRetriever = new MediaMetadataRetriever();
+                                mRetriever.setDataSource(path);
+                                bm = (mRetriever.getFrameAtTime(0));
+                                bm = MultimediaUtilities.resize(bm, 180, 180);
+                                //save file type
+                                type = "video";
+                                // Set image as preview in fragment
+                                fragment.set_preview(bm);
+                                // Add play button to reproduce video if clicked
+                                fragment.add_play_button();
+                        }
+
+                    }
 
 
 
@@ -658,6 +674,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             //Check if there is something missing in the fields
             if (!formIsValid())
                 return;
+
 
             showProgressDialog();
 

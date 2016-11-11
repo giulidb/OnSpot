@@ -61,6 +61,7 @@ public class AddSpotFragment extends BottomSheetDialogFragment {
 
         if( behavior != null && behavior instanceof BottomSheetBehavior ) {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
+
         }
 
     }
