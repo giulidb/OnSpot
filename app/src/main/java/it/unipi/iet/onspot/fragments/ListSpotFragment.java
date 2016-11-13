@@ -24,8 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
-
 import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.Spot;

@@ -104,6 +104,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
              @Override
              public void onDataChange(DataSnapshot dataSnapshot) {
                  User user = dataSnapshot.getValue(User.class);
+                 if(user != null ){
                  firstName.setText(user.firstName);
                  lastName.setText(user.lastName);
                  birthday.setText(user.birthday);
@@ -121,7 +122,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                      Picasso.with(ProfileActivity.this).load("https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png").transform(new CircleTransform()).into(profile_photo);
 
                  // save Photo URL to check if it will be changed.
-                 profile_photo.setTag(user.photoURL);
+                 profile_photo.setTag(user.photoURL);}
              }
 
             @Override
@@ -279,7 +280,8 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
         else{
 
             // Take photo url old if exist or null otherwise
-            saveUserOnDatabase(profile_photo.getTag().toString());
+            String url = (profile_photo.getTag()!= null)?(profile_photo.getTag().toString()):null;
+            saveUserOnDatabase(url);
 
         }
     }

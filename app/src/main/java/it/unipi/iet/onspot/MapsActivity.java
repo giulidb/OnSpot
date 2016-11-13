@@ -422,9 +422,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
             case R.id.modify:
                 // modify profile
-                i= new Intent(MapsActivity.this, ProfileActivity.class);
-                i.putExtra(ACTIVITY,"MapsActivity");
-                startActivity(i);
+                    if(!isAnonymous(AuthUt.get_mAuth().getCurrentUser())){
+                    i= new Intent(MapsActivity.this, ProfileActivity.class);
+                    i.putExtra(ACTIVITY,"MapsActivity");
+                    startActivity(i);}
+                else{
+                    alert_user();
+                }
                 break;
 
             case R.id.info:

@@ -1,11 +1,13 @@
 package it.unipi.iet.onspot;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 import java.util.Calendar;
 import it.unipi.iet.onspot.utilities.AuthUtilities;
@@ -36,6 +39,7 @@ public class myProfileActivity extends AppCompatActivity {
 
     private final String TAG = "myProfileActivity";
     private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
+    public static final String SIGN = "it.unipi.iet.onspot.SIGN";
 
 
     @Override
@@ -163,9 +167,13 @@ public class myProfileActivity extends AppCompatActivity {
 
             case R.id.modify:
                 // modify profile
-                i= new Intent(myProfileActivity.this, ProfileActivity.class);
-                i.putExtra(ACTIVITY,"myProfileActivity");
-                startActivity(i);
+                if(!isAnonymous(AuthUt.get_mAuth().getCurrentUser())){
+                    i= new Intent(myProfileActivity.this, ProfileActivity.class);
+                    i.putExtra(ACTIVITY,"MapsActivity");
+                    startActivity(i);}
+                else{
+                    alert_user();
+                }
                 break;
 
             case R.id.info:
@@ -177,5 +185,50 @@ public class myProfileActivity extends AppCompatActivity {
         }
         return false;
     }
+
+     /*
+     * Functions to handle anonymous users
+     */
+
+    // Function to check if user is anonymous
+    private boolean isAnonymous(FirebaseUser user){
+
+        if(user.getEmail() == null)
+            return true;
+        else
+            return false;
+    }
+
+    // Show alert dialog if anonymous user want to access to registered-user-only's areas
+    public void alert_user(){
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        alertDialog.setTitle("Anonymous User");
+        alertDialog.setMessage("This function is enable only for non-anonymous-user. Would you join us?");
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,"Yes ",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                // if user click on Yes, he is redirected to the sign-up Activity
+                Log.d(TAG,"User clicked Yes");
+                Intent i = new Intent(myProfileActivity.this,LoginActivity.class);
+                i.putExtra(SIGN,"sign-up");
+                //logout from anonymous user
+                AuthUt.signOut();
+                startActivity(i);
+
+            }
+        });
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,"No ",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                Log.d(TAG,"User clicked No");
+
+            }
+        });
+        alertDialog.show();
+
+    }
+
 
 }
