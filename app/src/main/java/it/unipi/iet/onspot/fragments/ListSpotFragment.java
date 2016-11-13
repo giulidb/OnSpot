@@ -2,6 +2,7 @@ package it.unipi.iet.onspot.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -14,8 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -105,6 +109,11 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
         mRecycler.setLayoutManager(mManager);
         Log.d(TAG, "Layout Manager created");
         final Context context = this.getContext();
+
+        //Set title
+        TextView title = (TextView)view.findViewById(R.id.title);
+        title.setText("Visible spots");
+        title.setBackgroundColor(Color.parseColor("#4ECDC4"));
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query uploadsQuery = getQuery(mDatabase);
