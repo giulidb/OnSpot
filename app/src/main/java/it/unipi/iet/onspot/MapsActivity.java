@@ -564,8 +564,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                 if (data != null) {
                     // Get uri of the file
                     Uri uri = data.getData();
+                    Log.d(TAG,"uri: "+uri);
                     // Get the actual path
-                    path = MultimediaUtilities.getRealPathFromURI(this,uri);
+                        path = MultimediaUtilities.getRealPathFromURI(this,uri);
+
+                    Log.d(TAG,"path: "+path);
 
                     // get File Size in bytes
                     File f = new File(path);
