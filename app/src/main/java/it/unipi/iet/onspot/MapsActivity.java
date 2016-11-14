@@ -829,6 +829,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Log.d(TAG,"address list: "+addressList);
         if(addressList!=null) {
             Address address = addressList.get(0);
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
