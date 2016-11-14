@@ -2,7 +2,6 @@ package it.unipi.iet.onspot.fragments;
 
 
 import android.content.res.TypedArray;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.Gravity;

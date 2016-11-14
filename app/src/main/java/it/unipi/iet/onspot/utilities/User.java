@@ -1,7 +1,5 @@
 package it.unipi.iet.onspot.utilities;
 
-import android.net.Uri;
-
 import com.google.firebase.database.IgnoreExtraProperties;
 
 

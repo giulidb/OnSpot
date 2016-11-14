@@ -34,11 +34,7 @@ public class myProfileActivity extends AppCompatActivity {
 
     private AuthUtilities AuthUt;
 
-    private PagerAdapter mPagerAdapter;
-    private ViewPager mViewPager;
-
     private final String TAG = "myProfileActivity";
-    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
 
 
@@ -54,6 +50,8 @@ public class myProfileActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         Bundle b = i.getExtras();
+        PagerAdapter mPagerAdapter;
+        ViewPager mViewPager;
 
         //Authentication
         AuthUt = new AuthUtilities();
@@ -156,6 +154,8 @@ public class myProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         Intent i;
+        final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
+
         switch (id) {
             case R.id.logout:
                 //logout
@@ -193,10 +193,8 @@ public class myProfileActivity extends AppCompatActivity {
     // Function to check if user is anonymous
     private boolean isAnonymous(FirebaseUser user){
 
-        if(user.getEmail() == null)
-            return true;
-        else
-            return false;
+        return (user.getEmail() == null);
+
     }
 
     // Show alert dialog if anonymous user want to access to registered-user-only's areas

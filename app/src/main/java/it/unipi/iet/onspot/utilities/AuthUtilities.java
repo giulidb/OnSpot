@@ -61,11 +61,6 @@ public class AuthUtilities {
     }
 
 
-    // Get User's photoUrl
-    public Uri getPhoto_url(){
-        return user.getPhotoUrl();
-    }
-
     // Get User's name
     public String getDisplayName(){return user.getDisplayName();}
 
@@ -76,36 +71,6 @@ public class AuthUtilities {
     public void signOut(){
         Log.d(TAG,"signOut: "+mAuth);
         mAuth.signOut();}
-
-
-
-    // Set User's Mail
-    public void setUserMail(String email){
-
-        user.updateEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User email address updated.");
-                        }
-                    }
-                });
-    }
-
-    // Set User's Password
-    public void setUserPassword(String newPassword){
-
-        user.updatePassword(newPassword)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User password updated.");
-                        }
-                    }
-                });
-    }
 
     // Update User's profile
     public void updateUserProfile(String Name, Uri PhotoUri){

@@ -31,7 +31,6 @@ public class MainActivity extends Activity{
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
     private final String TAG = "MainActivity";
     private AuthUtilities AuthUt;
-    private LoginButton loginButton;
     private CallbackManager callbackManager;
 
     @Override
@@ -76,7 +75,7 @@ public class MainActivity extends Activity{
         // Connect with Facebook button
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) findViewById(R.id.button3);
+        LoginButton loginButton = (LoginButton) findViewById(R.id.button3);
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override

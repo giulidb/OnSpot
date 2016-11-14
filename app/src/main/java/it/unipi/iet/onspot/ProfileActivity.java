@@ -1,6 +1,5 @@
 package it.unipi.iet.onspot;
 import android.app.DatePickerDialog;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +20,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -53,15 +50,11 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
     private EditText firstName;
     private EditText lastName;
     private ImageView profile_photo;
-    private AlertDialog.Builder builder;
     private Uri photo_uri = null;
-    private AlertDialog dialog;
     private AuthUtilities AuthUt;
 
     /* Constants */
     private String TAG = "ProfileActivity";
-    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
-    private int PERMISSION_REQUEST_CODE = 1;
 
     private String path;
     private String Name;
@@ -109,7 +102,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                  lastName.setText(user.lastName);
                  birthday.setText(user.birthday);
                  gender.setText(user.gender);
-                 butt.setText("Save");
+                 butt.setText(R.string.save);
 
                  // to manage photo profile
                  profile_photo.setTag(user.photoURL);
@@ -138,6 +131,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
     // Create DataPickerDialog to display when birthday view is clicked
     public void create_date_picker(){
 
+
         Calendar newCalendar = Calendar.getInstance();
         DatePickerDialog DatePickerDialog = new DatePickerDialog(ProfileActivity.this, new DatePickerDialog.OnDateSetListener() {
 
@@ -157,7 +151,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
 
     // Create Dialog Box to choose gender info
     public void create_dialog_box(){
-        builder = new AlertDialog.Builder(ProfileActivity.this,R.style.AppDialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this,R.style.AppDialog);
         builder.setTitle("Select gender")
                 .setItems(R.array.genders, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -169,7 +163,7 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
                         dialog.dismiss();
                     }
                 });
-        dialog = builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
 
     }
@@ -180,13 +174,13 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
 
     public void change_photo(){
 
+        final int PERMISSION_REQUEST_CODE = 1;
         // Permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Log.d(TAG, "Permission check at runtime");
-            if(PermissionUtilities.checkPermission(this, android.Manifest.permission.CAMERA,
-                    PERMISSION_REQUEST_CODE)&&
-                    (PermissionUtilities.checkPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                            PERMISSION_REQUEST_CODE))){
+            if(PermissionUtilities.checkAndRequestPermissions(this,new String[]{android.Manifest.permission.CAMERA,
+                                    android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                            PERMISSION_REQUEST_CODE)){
                 MultimediaUtilities.create_intent("image", this);
             }
         }
@@ -384,10 +378,11 @@ public class ProfileActivity extends BaseActivity implements View.OnClickListene
 
 @Override
     public void onBackPressed() {
-        // disable going back to the SignUpActivity
+    final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     Intent intent = getIntent();
     String action = intent.getStringExtra(ACTIVITY);
     if(action.equals("LoginActivity"))
+        // disable going back to the SignUpActivity
         moveTaskToBack(true);
     else if(action.equals("myProfileActivity") || action.equals("MapsActivity"))
         finish();

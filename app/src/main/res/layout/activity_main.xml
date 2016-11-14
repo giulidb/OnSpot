@@ -15,7 +15,7 @@
         android:layout_marginTop="125dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/logo1_small"/>
+        android:src="@drawable/logo1"/>
 
     <RelativeLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,13 +32,15 @@
         android:layout_alignStart="@+id/button2"
         android:layout_alignEnd="@+id/button2"
         android:paddingStart="4dp"
-        />
+        android:paddingEnd="4dp"
+            />
 
         <Button android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/action_sign_up"
         android:drawableStart="@drawable/email"
         android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:background="@color/colorPrimary"
         android:id="@+id/button2"
         android:layout_below="@+id/button"
@@ -70,8 +72,10 @@
         android:layout_below="@+id/button3"
         android:layout_alignStart="@+id/button3"
         android:layout_alignEnd="@+id/button3"
-         android:layout_centerInParent="true"
+        android:layout_centerInParent="true"
         android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+
        />
 
 

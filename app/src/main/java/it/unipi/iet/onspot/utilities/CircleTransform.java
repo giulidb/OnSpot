@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import com.squareup.picasso.Transformation;
 
 /**
- * Created by Giulia on 07/11/2016.
+ *  Class to implement a CircleTrasform when a image was loaded with Picasso library.
  */
 
 public class CircleTransform implements Transformation {

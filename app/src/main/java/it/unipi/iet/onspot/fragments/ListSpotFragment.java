@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -112,7 +111,7 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
 
         //Set title
         TextView title = (TextView)view.findViewById(R.id.title);
-        title.setText("Visible spots");
+        title.setText(R.string.visible_spot);
         title.setBackgroundColor(Color.parseColor("#4ECDC4"));
 
         // Set up FirebaseRecyclerAdapter with the Query
@@ -276,26 +275,7 @@ public class ListSpotFragment extends BottomSheetDialogFragment implements View.
 
     public Query getQuery(DatabaseReference databaseReference) {
 
-        Query listQuery = databaseReference.child("spots").orderByChild("Lat").startAt(lowLat).endAt(highLat);
-        /*listQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot spotSnapshot : dataSnapshot.getChildren()) {
-                    double Long = (double)spotSnapshot.child("Lat").getValue();
-                    Query k = listQuery.orderByChild("Lng").startAt(lowLng).endAt(highLng);
-                    if (Long>lowLng && Long<highLng) {
-                        String key = spotSnapshot.getKey();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-
-            }
-        });*/
-
-        return listQuery;
+        return databaseReference.child("spots").orderByChild("Lat").startAt(lowLat).endAt(highLat);
     }
 
 

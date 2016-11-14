@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -15,7 +16,7 @@ import android.widget.TextView;
 public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
 
     private TypedArray images;
-    String TAG = "ArrayAdapterWithIcon";
+    private final String TAG = "ArrayAdapterWithIcon";
 
 
     public ArrayAdapterWithIcon(Activity activity, String[] items,TypedArray images) {
@@ -25,8 +26,9 @@ public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
     }
 
 
+    @NonNull
     @Override
-      public View getView(int position, View convertView, ViewGroup parent) {
+      public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setTextColor(Color.WHITE);

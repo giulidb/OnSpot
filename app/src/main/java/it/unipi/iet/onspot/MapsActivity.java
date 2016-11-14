@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -29,7 +30,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+
 import com.facebook.login.LoginManager;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -68,7 +71,6 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.text.DateFormat;
 import java.util.List;
@@ -96,10 +98,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private LocationRequest mLocationRequest;
     private LatLngBounds mLatLngBounds;
+    private boolean first = true;
+
+    // Markers variables
     private ClusterManager<MarkerItem> mClusterManager;
     private Marker marker;
-    private Algorithm<MarkerItem> clusterManagerAlgorithm;
 
 
     // Firebase variables
@@ -130,7 +135,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     private final String TAG = "MapsActivity";
     public static final String SIGN = "it.unipi.iet.onspot.SIGN";
-    private final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
     public final long MAX_SIZE = 16777216;
 
 
@@ -157,7 +161,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         // Check for location permission at runtime for Android version 6.0 or greater (API level 23)
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Log.d(TAG, "Permission check at runtime");
-            PermissionUtilities.checkPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION,
+            PermissionUtilities.checkAndRequestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                             LOCATION_PERMISSION_REQUEST_CODE);
         }
         SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -246,6 +250,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     {
 
         mGoogleMap=googleMap;
+        Algorithm<MarkerItem> clusterManagerAlgorithm;
 
         // Initialize the Cluster marker manager with the context and the map.
         mClusterManager = new ClusterManager<>(this, mGoogleMap);
@@ -289,15 +294,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                //TODO: non so se è utile
-                // When a spot was removed from the Database
-                Collection<MarkerItem> items = clusterManagerAlgorithm.getItems();
-                for(MarkerItem m : items){
-                    if(m.spot.equals(dataSnapshot.getValue(Spot.class)))
-                        mClusterManager.removeItem(m);
-                        break;
-                }
 
             }
 
@@ -356,7 +352,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     public void onConnected(Bundle bundle)
     {
         //Sets up the location request.
-        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
@@ -382,10 +378,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     {
         mLastLocation = location;
 
-        //move map camera
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        if(first) {
+            //move map camera
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+            first = false;
+        }
 
 
         //stop location updates
@@ -409,6 +408,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final String ACTIVITY ="it.unipi.iet.onspot.ACTIVITY";
         int id = item.getItemId();
         Intent i;
         switch (id) {
@@ -508,11 +508,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     // Permission
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.d(TAG, "Permission check at runtime");
-                        if(PermissionUtilities.checkPermission(this,Manifest.permission.CAMERA,
-                                PHOTO_PERMISSION_REQUEST_CODE)&&
-                                (PermissionUtilities.checkPermission(this,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                                        PHOTO_PERMISSION_REQUEST_CODE))){
+                        if(PermissionUtilities.checkAndRequestPermissions(this,new String[]{Manifest.permission.CAMERA,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                                PHOTO_PERMISSION_REQUEST_CODE)){
                             MultimediaUtilities.create_intent("image", this);
                         }
                     }
@@ -526,7 +524,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     // Permission
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.d(TAG, "Permission check at runtime");
-                        if(PermissionUtilities.checkPermission(this,Manifest.permission.CAMERA,
+                        if(PermissionUtilities.checkAndRequestPermissions(this,new String[]{Manifest.permission.CAMERA},
                                 VIDEO_PERMISSION_REQUEST_CODE)){
                         MultimediaUtilities.create_intent("video", this);
                         }
@@ -541,11 +539,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     // Permission
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.d(TAG, "Permission check at runtime");
-                        if(PermissionUtilities.checkPermission(this,Manifest.permission.RECORD_AUDIO,
-                                MICROPHONE_PERMISSION_REQUEST_CODE)&&
-                        (PermissionUtilities.checkPermission(this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                MICROPHONE_PERMISSION_REQUEST_CODE))){
+                        if(PermissionUtilities.checkAndRequestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MICROPHONE_PERMISSION_REQUEST_CODE)){
                             MultimediaUtilities.create_intent("audio", this);
                         }
                     }
@@ -599,7 +595,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                                 // Get right orientation of the image
                                 bm = MultimediaUtilities.rotateBitmap(bm, path);
                                 // Resize image
-                                //TODO: decidere se va bene la max size
                                 bm = MultimediaUtilities.resize(bm, 180, 180);
                                 //save file type
                                 type = "image";
@@ -671,7 +666,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     // Function to store the spot just added by the user in the DB
     public void saveSpot(View view) {
 
-        if(mLastLocation == null){
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+        if(!manager.isProviderEnabled( LocationManager.GPS_PROVIDER )){
 
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
@@ -683,6 +680,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
 
         else {
+
+            // Current Location request
+            //Requests location updates from the FusedLocationApi.
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                        mLocationRequest, this);
+            }
+
             // Retrieve description and category
             final AddSpotFragment fragment = retrieveFragment();
             description = fragment.getDescription();
@@ -791,8 +798,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         Log.d(TAG, "currentTime "+currentTime);
 
         //Retrieve location info
-        //TODO: vedere se c'è un modo migliore di prendere la location
-        //TODO: se location non è abilitata crasha
 
             double Lat = mLastLocation.getLatitude();
             double Lng = mLastLocation.getLongitude();
@@ -858,9 +863,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
      * Customize color clusters
      */
 
-    public class MarkerRenderer  extends DefaultClusterRenderer<MarkerItem> {
+    private class MarkerRenderer  extends DefaultClusterRenderer<MarkerItem> {
 
-        public MarkerRenderer() {
+         MarkerRenderer() {
             super(getApplicationContext(), mGoogleMap, mClusterManager);
         }
 
@@ -917,10 +922,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     // Function to check if user is anonymous
     private boolean isAnonymous(FirebaseUser user){
 
-        if(user.getEmail() == null)
-            return true;
-        else
-            return false;
+        return (user.getEmail() == null);
     }
 
     // Show alert dialog if anonymous user want to access to registered-user-only's areas
@@ -960,7 +962,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
      * Functions for permission handling.
      */
 
-    //TODO: controllare se effettivamente funziona tutta 'sta roba
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
@@ -1012,6 +1013,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     else {
                     // permission denied
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();}
+                break;
 
             case VIDEO_PERMISSION_REQUEST_CODE:
                 if (PermissionUtilities.isPermissionGranted(permissions, grantResults,

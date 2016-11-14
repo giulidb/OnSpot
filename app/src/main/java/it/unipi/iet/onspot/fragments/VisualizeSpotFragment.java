@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +27,6 @@ import it.unipi.iet.onspot.R;
 import it.unipi.iet.onspot.utilities.CircleTransform;
 import it.unipi.iet.onspot.MediaStreamer;
 import it.unipi.iet.onspot.utilities.Spot;
-import it.unipi.iet.onspot.utilities.SpotViewHolder;
 import it.unipi.iet.onspot.utilities.User;
 
 /**
@@ -38,10 +35,7 @@ import it.unipi.iet.onspot.utilities.User;
 
 public  class VisualizeSpotFragment extends BottomSheetDialogFragment {
 
-    private CoordinatorLayout.Behavior behavior;
     private String spot_key;
-    private FirebaseRecyclerAdapter<Spot, SpotViewHolder> mAdapter;
-
     private TextView title;
     private TextView date;
     private TextView category;
@@ -81,6 +75,8 @@ public  class VisualizeSpotFragment extends BottomSheetDialogFragment {
         super.setupDialog(dialog, style);
         View contentView = View.inflate(getContext(), R.layout.fragment_visualizespot, null);
         dialog.setContentView(contentView);
+        CoordinatorLayout.Behavior behavior;
+
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
         behavior = params.getBehavior();

@@ -33,11 +33,6 @@
     <string name="gender">Gender</string>
     <string name="join">Join</string>
 
-    <!-- Strings for PermissionUtilities -->
-    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
-    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
-    <string name="permission_required_toast">Location permission is required for this demo.</string>
-
     <!-- String for Add Spot Fragment -->
     <string name="add_spot">Add Spot</string>
     <string name="description">Description</string>
@@ -61,6 +56,7 @@
     <string name="age">Age: </string>
 
     <!-- String for InfoActivity -->
+    <string name="about">About OnSpot</string>
     <string name="credits">Credits</string>
     <string name="MapsIconCollection">  Maps Icons Collection</string>
     <string name="about_onSpot">On Spot is app that allows users to submit and view
@@ -68,9 +64,10 @@
         OnSpot creates a community of people sharing experiences like food, nightlife, shows,
         outdoor activities, travel tips and more. \n \n
         How OnSpot Works:\n
-        &#8226; Select Your Interests –- Easily and quickly choose from N interest categories to find the best experiences possible for you. \n
-        &#8226; Explore What People Recommend –- Scroll through a feed of amazing new experiences or explore your city on a map. \n
+        &#8226; Explore What People Recommend – Scroll through a feed of amazing new experiences or explore your city on a map. \n
         &#8226; Recommend An Experience – Share what you want by posting a video, photo or audio along with a short description. \n
+        &#8226; Value an Experience – Love an experience if you like it by clicking on the heart icon. \n
+
     </string>
 
 
