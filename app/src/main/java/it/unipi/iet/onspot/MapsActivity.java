@@ -241,9 +241,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
      * GoogleMaps functions
      */
 
-    //TODO: sistemare parte di google maps in modo che zoommi di più senza sbagliare
-    //TODO: e che quando riapri rimanga dov'era l'ultima volta
-
     //Manipulates the map once available.
     @Override
     public void onMapReady(final GoogleMap googleMap)

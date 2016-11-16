@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // auth and auth state listener declaration
     private AuthUtilities AuthUt;
-    private  EditText emailField;
+    private EditText emailField;
     private EditText passwordField;
     private Button Login;
     private ProgressDialog progressDialog;
