@@ -18,3 +18,11 @@ How OnSpot Works:
 - Find Exactly What You Want – Filter by category or search by keyword to find what you want; filter by location to find things to do on your upcoming trip and Wishlist the experiences you want to try.
 
 - Recommend An Experience – Share what you want by posting a video, photo or audio along with a short description.
+
+## User Interface
+<p align="center">
+<img src="https://github.com/giulidb/OnSpot/blob/master/OnSpot_Home.PNG" width="180" height= "300">
+<img src="https://github.com/giulidb/OnSpot/blob/master/OnSpot_Map.PNG" width="180" height= "300">
+<img src="https://github.com/giulidb/OnSpot/blob/master/OnSpot_Add.PNG" width="180" height= "300">
+<img src="https://github.com/giulidb/OnSpot/blob/master/OnSpot_Search.PNG" width="180" height= "300">
+</p>
